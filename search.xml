@@ -1,24 +1,235 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>FirstMD</title>
-    <url>/2021/11/21/FirstMD/</url>
-    <content><![CDATA[<p>This is my first post whose name is FirstMD.</p>
+    <title>第一章 Java语言概述</title>
+    <url>/2021/11/23/Coding/Java/01Java%E8%AF%AD%E8%A8%80%E6%A6%82%E8%BF%B0/</url>
+    <content><![CDATA[<h1 id="第1章-java语言概述">第1章 Java语言概述</h1>
+<h2 id="一软件开发介绍">一、软件开发介绍</h2>
+<ul>
+<li>软件：一系列按照特定顺序组织的计算机数据和指令的集合
+<ul>
+<li>软件分为系统软件和应用软件</li>
+</ul></li>
+<li>人机交互方式
+<ul>
+<li>图形化界面（Graphical User Interface, GUI）</li>
+<li>命令行方式（Command Line Interface, CLI）</li>
+</ul></li>
+<li>常用Dos指令：
+<ul>
+<li>dir：列出当前目录下的文件及文件夹</li>
+<li>md：创建目录</li>
+<li>rd：删除目录</li>
+<li>cd：进入指定目录</li>
+<li>cd..：退回到上一级目录</li>
+<li>cd：退回到根目录</li>
+<li>del：删除文件</li>
+<li>exit：退出Dos命令行</li>
+<li>补充：echo javase&gt;1.doc</li>
+</ul></li>
+</ul>
 <span id="more"></span>
-<p>here is other content.<br>I update this file at 2021/11/21 15:31</p>
+<h2 id="二计算机编程语言介绍">二、计算机编程语言介绍</h2>
+<ul>
+<li>第一代语言：机器语言</li>
+<li>第二代语言：汇编语言：使用助记符表示一条机器指令</li>
+<li>第三代语言：高级语言
+<ul>
+<li>C、Pascal、Fortran面向过程的语言</li>
+<li>C++面向过程/面向对象</li>
+<li>Java跨平台的纯面向对象语言</li>
+<li>.NET跨语言的平台</li>
+<li>Python、Scala...</li>
+</ul></li>
+</ul>
+<h2 id="三java语言概述">三、Java语言概述</h2>
+<p>后台开发：Java（大型）、PHP、Python（头条后台使用python）、Go（宣传具有java开发效率、具有C/C++执行效率）、Node.js（做前端的学习）</p>
+<p>Java语言简史：</p>
+<ul>
+<li>2004年，发布里程碑式版本JDK1.5，为突出重要性更名为JDK5.0。后续版本中只要是1.X其实就是JDK X.0（例如JDK1.6等同于JDK6.0）</li>
+<li>2005年，J2SE-更名-&gt;JavaSE，J2EE-更名-&gt;JavaEE，J2ME-更名-&gt;JavaME</li>
+<li>2014年，发布JDK8.0，是继JDK5.0以来变化最大的版本。通常目前公司使用版本一定是1.5以后的，一般是6.0、7.0、8.0</li>
+<li>2018年3月，发布JDK10.0，版本号以时间命名：18.3</li>
+</ul>
+<p>Java体系平台</p>
+<ul>
+<li>Java SE（Java Standard Edition）标准版：主要用于开发桌面级应用。现在一般不再用Java写桌面级应用了</li>
+<li>java EE（Java Enterprise Edition）企业版：为企业环境下开发应用程序，后台</li>
+<li>Java ME（Java Micro Edition）小型版 &amp; Java Card：为移动终端开发应用程序</li>
+</ul>
+<p>Java应用领域</p>
+<ul>
+<li><strong>企业级应用</strong>：后台开发</li>
+<li><strong>Android平台应用</strong>：作为Android开发语言出现</li>
+<li><strong>大数据平台开发</strong>：后台大都基于Java后台，<strong>大数据</strong>自然要开放Java接口。各类框架有Hadoop、spark、storm、flink，各种中间件如flume、kafka、sqoop</li>
+<li>移动领域</li>
+</ul>
+<p>Java是由C语言和C++继承而来的：</p>
+<ul>
+<li>java是一个纯粹的面向对象的语言；</li>
+<li>Java舍弃了C语言中容易引起错误的指针（使用 引用 来取代）；</li>
+<li>Java增加了垃圾回收器功能</li>
+</ul>
+<h2 id="四java语言运行机制及运行过程">四、Java语言运行机制及运行过程</h2>
+<p>Java语言特点：</p>
+<ul>
+<li>特点一：面向对象
+<ul>
+<li>两个基本概念：类、对象</li>
+<li>三大特性：封装、继承、多态</li>
+</ul></li>
+<li>特点二：健壮性
+<ul>
+<li>吸收了C/C++语言优点，但去掉了影响程序健壮性的部分（指针、内存申请及释放），提供了一个相对安全的内存管理和访问机制。</li>
+</ul></li>
+<li>特点三：跨平台性
+<ul>
+<li>跨平台性：Java语言编写的程序在不同的系统上都可以运行</li>
+<li>原理：只需在需要运行Java应用的操作系统上安装Java虚拟机（Java Virtual Machine, JVM）即可。由JVM负责Java程序在该系统的运行。</li>
+</ul></li>
+</ul>
+<p>核心机制——垃圾回收</p>
+<ul>
+<li>不使用的内存空间应当被回收——垃圾回收
+<ul>
+<li>C/C++中，由程序员负责回收无用内存</li>
+<li>Java提供了一种系统级线程跟踪存储空间的分配情况，在JVM空闲时，检查并释放可被释放的内存空间</li>
+</ul></li>
+<li>垃圾回收在Java程序的运行过程中自动进行，程序员无法精确控制和干预</li>
+<li>但Java程序仍然会有可能出现<strong>内存泄漏和内存溢出</strong>的问题</li>
+</ul>
+<h2 id="五java的环境搭建">五、Java的环境搭建</h2>
+<p>JDK后续版本向下兼容，高版本与低版本之间关系为包含关系（如果换用了新版本并且改掉了旧版本内容会造成原先能运行的程序无法运行，故新版本是旧版本的添加）</p>
+<p><strong>JDK及JRE</strong>：</p>
+<ul>
+<li>JDK：Java Development Kit Java开发工具包。JDK中包括<strong>Java开发工具（编译工具javac.exe，打包工具jar.exe）</strong>和<strong>JRE</strong>。Java开发必需。</li>
+<li>JRE：Java Runtime Environment java运行环境。JRE包括<strong>Java虚拟机（JVM）</strong>和<strong>Java程序所需的核心类库</strong>。Java程序运行必需。</li>
+<li>jdk-8u131-win.....exe中：u代表update，131表示在jdk8.0版本上已经更新到131了</li>
+</ul>
+<figure>
+<img src="/2021/11/23/Coding/Java/01Java%E8%AF%AD%E8%A8%80%E6%A6%82%E8%BF%B0/01%20JDK-JRE-JVM.png" alt="alt"><figcaption aria-hidden="true">alt</figcaption>
+</figure>
+<p>JDK目录结构：</p>
+<figure>
+<img src="/2021/11/23/Coding/Java/01Java%E8%AF%AD%E8%A8%80%E6%A6%82%E8%BF%B0/02%20JDK%20Directory%20Architecture.png" alt="alt"><figcaption aria-hidden="true">alt</figcaption>
+</figure>
+<ul>
+<li>bin目录：开发工具，包括编译工具javac.exe、文档生成工具javadoc.exe</li>
+<li>db目录：java写的数据库</li>
+<li>include目录：C语言编写的头文件，jni.h代表Java Native Interface</li>
+<li>jre目录：JRE运行时环境</li>
+<li>lib目录：jar包库文件</li>
+<li>src压缩文件：java源码和开源类库</li>
+</ul>
+<p>配置环境变量：</p>
+<ul>
+<li>PC中环境变量path代表 Windows系统执行命令时要搜寻的路径</li>
+<li>改进：把（例如JAVA_HOME），之后再将这个变量名动态的引用（例如%JAVA_HOME%;）。改进的原因是 之后搭建服务器时需要寻找JAVA_HOME环境变量，从而获得并使用一些库文件，因此需要配置JAVA_HOME</li>
+</ul>
+<h2 id="六开发体验helloworld-常见的问题及解决方法">六、开发体验——helloworld &amp; 常见的问题及解决方法</h2>
+<p>步骤</p>
+<ol type="1">
+<li>将java代码写入到扩展名为.java的文件中。</li>
+<li>通过javac命令将java文件进行编译，生成.class文件。<strong>生成的.class文件文件名为.java文件中类的类名</strong>。（由于Windows目录下不区分大小写，使用javac ---.java可以不区分大小写）</li>
+<li>通过java命令对生成的.class文件进行运行。（运行命令时.class扩展名无需写）</li>
+<li>每次修改.java文件，运行时都需要重新编译（运行时区分大小写，因为此时回到了java层面，查找的是类）</li>
+</ol>
+<h2 id="八注释comment">八、注释（comment）</h2>
+<ul>
+<li><p>用于注解说明解释程序的文字就是注释</p></li>
+<li><p>Java中的注释类型：</p>
+<ul>
+<li><p>单行注释：//</p></li>
+<li><p>多行注释：/* */</p></li>
+<li><p>文档注释： /**<br>
+<span class="citation" data-cites="author">@author</span> 指定java程序的作者 <span class="citation" data-cites="version">@version</span> 指定源文件的版本 **/ 注释的内容可以被JDK提供的工具javadoc所解析，生成一套以网页文件形式体现的该程序的说明文档</p>
+<p>操作方法：javadoc -d mydoc -author -version HelloWorld.java</p></li>
+</ul></li>
+<li><p>一般先将自己的思想通过注释整理出来，在用代码实现</p></li>
+</ul>
+<h2 id="九java-api文档">九、Java API文档</h2>
+<ul>
+<li>API（Application Programming Interface, 应用程序编程接口）是Java提供的基本编程接口。通俗来说就是<strong>Java提供的一系列类库</strong>。</li>
+</ul>
+<h2 id="对第一个程序的总结">对第一个程序的总结</h2>
+<ol type="1">
+<li><p>Java程序编写-编译-运行的过程 编写：将编写的java代码保存在以.java结尾的源文件中 编译：使用javac.exe命令编译.java源文件。格式：javac 源文件名.java 运行：使用java命令解释运行字节码文件。格式：java 类名</p></li>
+<li><p>在一个Java源文件中可以声明多个类。但是只能最多有一个类被声明为public，且只能加到与文件名一致的类上，否则编译不通过</p></li>
+</ol>
+<p>实际上先有的 类名要与文件名一致，public只能加到与文件名一致的类上是结果</p>
+<blockquote>
+<p>为什么Java源文件中只能最多有一个public类？</p>
+<p>答：每个编译单元（java源文件）都只能有一个public类，这表示每个编译单元都有单一的公共接口，用public类来表现。该接口可以按要求包含众多的支持包访问权限的类。如果某个编译单元包含多个public类或者public类名与编译单元名不同，都会产生编译错误。（——《java编程思想 第四版》）</p>
+<p>总结：一个编译单元可以存在多个类，在编译时产生多个不同的.class文件，.class文件即是程序运行的数据来源。Java将public类作为每个编译单元的数据接口，只能有一个，不然不能处理存在多个public类的Java文件。当一个编译单元有多个非public类时，运行时需要对数据来源进行选择。</p>
+</blockquote>
+<ol start="3" type="1">
+<li><p>程序的入口是main方法，格式是固定的</p></li>
+<li><p>输出语句： System.out.println(); System.out.print();</p></li>
+<li><p>编译的过程： 编译后会生成一个或多个字节码文件。字节码文件名与Java源文件中的类名相同（一个源文件有几个类就会在编译后生成几个字节码文件）</p></li>
+<li><p>运行： 运行包含程序入口的字节码文件即可。 如果生成了多个字节码文件（一个源文件中有多个类）并且想要运行其他字节码文件就需要在其他类中定义程序入口main</p></li>
+</ol>
+<h2 id="十良好的编程风格">十、良好的编程风格</h2>
+<ul>
+<li><p>大括号可以是首尾式 public class HelloWorld {</p>
+<p>}</p></li>
+<li><p>大括号可以是单独一行 public class HelloWorld {</p>
+<p>}</p></li>
+<li><p>适当位置加空格：a = b + c * d;</p></li>
+</ul>
+<h2 id="十一常用的java编程工具">十一、常用的Java编程工具</h2>
+<ol type="1">
+<li>文本编辑工具
+<ul>
+<li>记事本</li>
+<li>UltraEdit</li>
+<li>EditPlus</li>
+<li>TextPad</li>
+<li>NotePad</li>
+</ul></li>
+<li>集成开发环境（Integrated Development Environment，IDE）
+<ul>
+<li>NetBeans</li>
+<li>Eclipse</li>
+<li>IDEA</li>
+</ul></li>
+</ol>
+<h2 id="每日一考">每日一考</h2>
+<ol type="1">
+<li><p>JDK，JRE，JVM三者之间的关系，以及JDK、JRE包含的主要结构有哪些？</p>
+<ul>
+<li>答：JDK、JRE、JVM三者为包含关系。JDK包含JRE和一些Java开发工具，JRE包含JVM和Java程序运行的核心类库</li>
+</ul></li>
+<li><p>为什么要配置path环境变量？如何配置？ 答：</p>
+<ul>
+<li>配置path环境变量是因为(可以不在工具所在目录)可在任何文件目录即可调用并运行该工具</li>
+<li>在我的电脑 - 属性 - 高级 - 环境变量；建立JAVA_HOME环境变量，path中只需动态调用JAVA_HOME、再加上</li>
+</ul></li>
+<li><p>常用的几个命令行操作都有哪些？（至少4个） 答：</p>
+<ul>
+<li>cd</li>
+<li>md</li>
+<li>dir</li>
+<li>del</li>
+<li>rd</li>
+</ul></li>
+<li><p>创建如下的类，使得运行时能够输出：</p>
+<blockquote>
+<p>公众号：百家全匠</p>
+<p>英文名：Encyclopedia Master 用途：获得资源、增长知识、学习技能……</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">OfficialAccount</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;公众号：百家全匠\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">		System.out.println(<span class="string">&quot;英文名：Encyclopedia Master&quot;</span>);</span><br><span class="line">		System.out.println(<span class="string">&quot;用途：获得资源、增长知识、学习技能……&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>编译和运行上述代码的指令</p></li>
+</ol>
+<figure>
+<img src="/2021/11/23/Coding/Java/01Java%E8%AF%AD%E8%A8%80%E6%A6%82%E8%BF%B0/03%20Day1%20-%2002.png" alt="alt"><figcaption aria-hidden="true">alt</figcaption>
+</figure>
 ]]></content>
       <categories>
-        <category>Test</category>
-        <category>随笔</category>
+        <category>程序设计</category>
+        <category>Java</category>
       </categories>
       <tags>
-        <tag>随笔</tag>
+        <tag>笔记</tag>
       </tags>
-  </entry>
-  <entry>
-    <title></title>
-    <url>/2021/11/21/README/</url>
-    <content><![CDATA[<h1 id="Hexo博客"><a href="#Hexo博客" class="headerlink" title="Hexo博客"></a>Hexo博客</h1><p>此分支用来存放hexo生成的public文件</p>
-]]></content>
   </entry>
 </search>
