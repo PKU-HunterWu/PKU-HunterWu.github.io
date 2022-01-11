@@ -1,6 +1,823 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>第5章 面向对象编程-中</title>
+    <url>/2022/01/11/Coding/Java/05%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%BC%96%E7%A8%8B%E4%B8%AD/</url>
+    <content><![CDATA[<h1 id="第5章面向对象编程-中">第5章、面向对象编程-中</h1>
+<h2 id="目录">目录</h2>
+<p>​ 一、面向对象的特征之二：继承性<br> ​ 二、方法的重写（override /overwrite）<br> ​ 三、super 关键字<br> ​ 四、子类对象实例化的全过程<br> ​ 五、面向对象特征之三：多态性（重难点）<br> ​ 六、Object 类的使用<br> ​ 七、包装类的使用<br> ​ 面试题<br> ​ 每日一考<br></p>
+<span id="more"></span>
+<h2 id="一面向对象的特征之二继承性">一、面向对象的特征之二：继承性</h2>
+<ol type="1">
+<li>继承的好处：
+<ul>
+<li>减少代码冗余，提高代码复用性</li>
+<li>便于功能扩展</li>
+<li>为<strong>多态性</strong>的使用提供前提</li>
+</ul></li>
+<li>继承性格式：class A extends B{ ... }
+<ul>
+<li>A：子类、派生类、subclass</li>
+<li>B：父类、超类、基类、superclass</li>
+<li>一旦子类A继承父类B后，字类A中就获取了父类B中声明的所有属性和方法。特别的，父类中声明为私有的属性和方法，子类继承父类后，仍然认为获取了父类中私有的结构，只是因为封装性的影响，使得字类不能直接调用父类的结构而已。（继承是能不能拿到的问题，封装是能不能使用的问题）</li>
+<li>子类继承父类后，还可以声明自己特有的属性或方法，实现功能的扩展</li>
+<li>子类与父类的关系，不同于数学上子集和集合的关系</li>
+<li>extends：延展、扩展</li>
+</ul></li>
+<li>Java中关于继承性的规定
+<ul>
+<li>一个类可被多个类继承</li>
+<li>一个类只能有一个父类：Java中<strong>类的单继承性</strong></li>
+<li>子父类是相对的，支持多层继承（直接父类、间接父类）
+<ul>
+<li>字类直接继承的父类：直接父类</li>
+<li>子类间接继承的父类：间接父类</li>
+</ul></li>
+<li>字类继承父类后，就获取了直接父类和所有间接父类中声明的属性和方法</li>
+</ul></li>
+<li>如果没有显式的声明一个类的父类的话，则此类继承于java.lang.Object类。所有的类（除java.lang.Object类）都直接或间接的继承于java.lang.Object类，意味着所有的Java类都具有java.lang.Object类声明的功能</li>
+</ol>
+<h3 id="附eclipse的debug如何调试程序">附：Eclipse的Debug，如何调试程序</h3>
+<ul>
+<li>System.out.println();</li>
+<li>Eclipse的Debug调试</li>
+</ul>
+<h2 id="二方法的重写override-overwrite">二、方法的重写（override / overwrite）</h2>
+<ol type="1">
+<li>重写：字类继承父类后，可对父类中同名同参数的方法进行覆盖操作</li>
+<li>应用：重写后，当创建子类对象后，<strong>通过子类对象调用父类中同名同参数的方法时，实际执行的是子类重写父类的方法</strong></li>
+<li>面试题：区分方法的重载与重写
+<ul>
+<li>重载：除参数列表不同不同外，方法名、权限等相同</li>
+</ul></li>
+<li>重写的规定
+<ul>
+<li>方法的声明：权限修饰符 返回值类型 方法名(形参列表) { //方法体 }</li>
+<li>约定俗成：子类中的叫“重写的方法”；父类中的叫“被重写的方法”</li>
+<li>子类重写的方法的方法名和形参列表 与 父类被重写的方法的方法名和形参列表相同</li>
+<li>子类重写的方法的权限修饰符 不小于 父类被重写的方法的权限修饰符（子类重写方法的可见性要高于父类的被重写方法）
+<ul>
+<li>子类不能重写父类中声明为private权限的方法（或者说 子类中与父类声明为private方法同名同参数的方法不能成为重写）</li>
+</ul></li>
+<li>返回值类型
+<ul>
+<li>父类中被重写方法返回值类型为void，则子类重写方法返回值类型只能是void</li>
+<li>父类中被重写方法返回值类型为A类型，则子类重写方法返回值类型可以是A类型或A类型的子类</li>
+<li>父类中被重写方法返回值类型为基本数据类型，则子类重写方法返回值类型必须是相同的基本数据类型</li>
+</ul></li>
+<li>子类中重写的方法抛出的异常类型不大于父类中被重写的方法抛出的异常类型</li>
+<li>子类和父类中同名同参数的方法要么都声明为非static的（重写），要么都声明为static（不是重写，static方法不能覆盖 是随着类的加载而加载的）</li>
+</ul></li>
+</ol>
+<h2 id="三super关键字">三、super关键字</h2>
+<ol type="1">
+<li>super理解为：父类的</li>
+<li>super可用来显式调用父类中的属性、方法、构造器</li>
+<li>super的使用，调用父类的属性或方法
+<ul>
+<li>可在子类的方法或构造器中，通过使用“super.属性”或“super.方法”的方式，显式的调用父类中声明的属性或方法。但通常习惯省略“super.”</li>
+<li>特殊情况：当子类和父类中定义了同名的属性时，如想在子类中调用父类中声明的属性，则必须显式的使用“super.属性”的方式，表明调用的是父类中声明的属性。</li>
+<li>特殊情况：当子类重写了父类方法后，若想在子类方法中调用父类中被重写的方法时，则必须显式的“super.方法”的方式，表明调用的是父类中被重写的方法。</li>
+</ul></li>
+<li>super调用父类的构造器
+<ul>
+<li>可在子类的构造器中显式的使用“super(形参列表)”的方式调用父类中生命的指定的构造器</li>
+<li>“super(形参列表)”的使用必须声明在子类构造器的首行</li>
+<li>在类的构造器中，针对于"this(形参列表)"或“super(形参列表)”只能二选一，不能同时出现</li>
+<li>在构造器函数体首行，没有显式调用"this(形参列表)"和“super(形参列表)”，则默认调用的是父类中的空参构造器（ 即super() ）【一个类被继承时，父类中需要有空参构造器（定义有参构造器前需显式定义空参构造器，否则只有有参构造器时编译器将不会自动添加空参构造器），否则子类中显式定义的构造器会报错、或无显式定义构造器的子类定义处报错.若不想在父类中显式声明无参构造器，则可在子类中显式调用父类的有参构造器】【一个类中有n个构造器，则最多n-1个构造器使用this(形参列表)，剩下的那个使用的是super(形参列表)】</li>
+<li>在类的多个构造器中，至少有一个类的构造器中使用了“super(形参列表) ”，调用父类的构造器。【子类中会有父类中的属性、方法，是因为调用了super(形参列表)】</li>
+</ul></li>
+</ol>
+<h2 id="四子类对象实例化的全过程">四、子类对象实例化的全过程</h2>
+<ul>
+<li>从结果看：子类继承父类后，就获取了父类中声明的属性或方法。创建子类的对象，在堆空间中，就会加载所有父类中声明的属性</li>
+<li>从过程看：当通过子类的构造器创建子类对象时，一定会直接或间接的调用其父类的构造器，进而调用父类的父类的构造器，直到调用了java.lang.Object类中空参的构造器为止，正因为加载过所有父类的结构，所以才可以看到内存中有父类中的结构，子类对象才可以考虑调用</li>
+<li>明确：虽然创建子类对象时，调用了父类的构造器，但是自始至终只是创建过一个对象，即为new的子类对象【构造器负责类中成员变量的初始化】</li>
+</ul>
+<h2 id="五面向对象特征之三多态性重难点">五、面向对象特征之三：多态性（重难点）</h2>
+<h3 id="核心内容">核心内容</h3>
+<ol type="1">
+<li>多态性理解：一个事物的多种形态</li>
+<li>多态性是什么：对象的多态性，父类的引用指向子类的对象（或子类对象赋给父类的引用）</li>
+<li>多态性的使用：创建的对象调用子父类同名同参数的方法时，实际执行的是子类重写父类的方法（<strong>虚拟方法调用（Virtual Method Invocation）</strong>）
+<ul>
+<li>ClassA a = new ClassB(); //A为B的父类</li>
+<li>有了对象多态性后，在编译期，只能调用父类中声明的方法，但在运行期，实际执行的是子类重写父类的方法。【总结：编译看左边，运行看右边】对象a无法调用子类ClassB中单独定义的方法</li>
+</ul></li>
+<li>多态性使用前提
+<ul>
+<li>类的继承关系</li>
+<li>方法的重写</li>
+</ul></li>
+<li>对象的多态性只适用于重写方法，不适用于同名同类型的属性（属性不构成重写）</li>
+<li>虚拟方法：
+<ul>
+<li>子类中定义了与父 同名参数的方法，在多态情况下，将此时父类的方法称为虚拟方法，父类根据赋给它的不同子类对象，动态调用属于子类的该方法。这样的方法调用在编译期是无法确定的。</li>
+<li>虚拟方法调用的过程也可称为<strong>动态绑定</strong>，虚方法动态绑定的子类重写的方法</li>
+<li>重载在方法调用之前，编译器就已经确定了所要调用的方法，称为“<strong>早绑定</strong>”或“<strong>静态绑定</strong>”；而对于多态，只有等到方法调用的那一刻，解释运行器才会确定所要调用的具体方法，称为“<strong>晚绑定</strong>”或“<strong>动态绑定</strong>”</li>
+</ul></li>
+</ol>
+<h3 id="instanceof操作符">instanceof操作符</h3>
+<p>有了对象的多态性后，内存中实际上是加载了子类特有的属性和方法的，但由于变量声明为父类类型，导致编译时只能允许调用父类中生命的属性和方法，子类中特有的属性和方法不能调用。</p>
+<ol type="1">
+<li>如何调用子类特有的属性和方法
+<ul>
+<li>强制类型转换（向下转型）：使用强转时可能出现ClassCastException的异常（编译无报错，运行报错） <img src="/2022/01/11/Coding/Java/05%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%BC%96%E7%A8%8B%E4%B8%AD/63%20Day%20-%2002.png" alt="向上转型与向下转型"></li>
+<li>instanceof关键字（先判断后再强制类型转换）
+<ul>
+<li>a instanceof A; // 判断对象a是否是类型A的实例，如是则返回true，否则返回false</li>
+<li>为了避免向下转型时出现ClassCastException异常，在向下转型前先进性instanceof的判断，一旦返回true就可进行向下转型，否则不能进行向下转型</li>
+<li>已知a为A的实例对象，若a instanceof B也为true，则类型B为类型A的父类</li>
+</ul></li>
+</ul></li>
+<li>笔试题 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> ProgramExam;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base</span></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> count = <span class="number">10</span>;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">display</span><span class="params">()</span></span>&#123;</span><br><span class="line">		System.out.println(<span class="keyword">this</span>.count);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Sub</span> <span class="keyword">extends</span> <span class="title">Base</span></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> count = <span class="number">20</span>;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">display</span><span class="params">()</span></span>&#123;</span><br><span class="line">		System.out.println(<span class="keyword">this</span>.count);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FieldMethodTest</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">		Sub s = <span class="keyword">new</span> Sub();</span><br><span class="line">		System.out.println(s.count); <span class="comment">//20</span></span><br><span class="line">		s.display(); <span class="comment">//20</span></span><br><span class="line">		</span><br><span class="line">		Base b = s;</span><br><span class="line">		<span class="comment">// 对于引用数据类型来讲，比较的是两个引用数据类型变量的地址值是否相同</span></span><br><span class="line">		System.out.println(b == s); <span class="comment">//true</span></span><br><span class="line">		System.out.println(b.count);<span class="comment">//10 声明为什么类型就去找那个类型所属的属性</span></span><br><span class="line">		b.display();<span class="comment">//20 重写的多态性</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<ul>
+<li>若子类重写了父类方法，就意味着子类中定义的方法彻底覆盖了父类中的同名方法，系统将不可能把父类里的方法转移到子类中。编译看左边，运行看右边</li>
+<li>对于实例变量则不存在这种现象，即使子类中定义了与父类完全相同的实例变量，这个实例变量依然不可能覆盖父类中定义的实例变量。</li>
+</ul>
+<h2 id="六object类的使用">六、Object类的使用</h2>
+<ol type="1">
+<li>Object类是所有Java类的根父类</li>
+<li>若在类的声明中未使用extends关键字知名其父类，则默认父类为java.lang.Object类</li>
+<li>Object类中的功能（属性、方法）就具有通用性
+<ul>
+<li>无属性</li>
+<li>方法：equals() / toString() / getClass() / hashCode() / clone() / finalize() / wait() / notify() / notifyAll()</li>
+</ul></li>
+<li>== 和equals()的区别：见《面试题》部分6.</li>
+<li>Object类中的toString()的使用
+<ul>
+<li>当输出对象的引用时，实际上是调用当前对象的toString()方法（但当引用为Null时，直接输出引用为null，但调用toString()方法再输出则会出现NullPointerException异常） <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> getClass().getName() + <span class="string">&quot;@&quot;</span> + Integer.toHexString(hashCode());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>像String、Date、File、包装类等都重写了Object类中的toString()方法，使得在调用toString()方法时，返回“实体内容”信息</li>
+<li>自定义类也可重写toString()方法，当调用此方法时，返回对象的“实体内容”。</li>
+<li>source --&gt; Generate toString()自动生成toString()方法</li>
+</ul></li>
+</ol>
+<h2 id="七包装类的使用">七、包装类的使用</h2>
+<ol type="1">
+<li>java中的JUnit单元测试
+<ul>
+<li>选中当前工程，右键选择--&gt;build path - add libraries - JUnit 4 - 下一步</li>
+<li>创建Java类，进行单元测试
+<ul>
+<li>此时的Java类要求：
+<ul>
+<li>此类是public的</li>
+<li>此类提供公共的无参构造器</li>
+</ul></li>
+</ul></li>
+<li>此类的单元测试方法
+<ul>
+<li>测试方法要求：方法的权限是public，没有返回值类型，没有形参</li>
+</ul></li>
+<li>此单元测试方法上需声明注解：<span class="citation" data-cites="Test">@Test</span>，并在单元测试类中导入：import org.junit.Test;</li>
+<li>声明完成单元测试方法后，即可在方法体内测试相关代码</li>
+<li>写完方法体代码后，左键双击选中单元测试方法名，右键，run as - JUnit Test</li>
+<li>说明：
+<ul>
+<li>若执行结果没有任何异常，绿条</li>
+<li>若执行结果出现异常，红条</li>
+</ul></li>
+</ul></li>
+<li>包装类的使用
+<ul>
+<li>Java提供了8种基本数据类型对应的包装类，使得基本数据类型的变量<strong>具有类的特征</strong></li>
+<li>基本数据类型、包装类、String三者之间的相互转换【掌握】
+<ul>
+<li>基本数据类型和包装类
+<ul>
+<li>基本数据类型--&gt;包装类：调用包装类的构造函数</li>
+<li>包装类--&gt;基本数据类型：调用包装类的XxxValue()</li>
+<li>JDK 5.0新特性：<strong>自动装箱 与 自动拆箱</strong>
+<ul>
+<li>自动装箱 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">int num = 10;</span><br><span class="line">Integer in1 = num;</span><br></pre></td></tr></table></figure></li>
+<li>自动拆箱 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">int num2 = in1;</span><br></pre></td></tr></table></figure></li>
+</ul></li>
+</ul></li>
+<li>基本数据类型和包装类 与 String之间的转换
+<ul>
+<li>基本数据类型不能直接转换为String类型，但可通过连接运算(String s = num + "")实现转换；或调用String重载的<strong>valueOf(Xxx xxx)</strong></li>
+<li>String转换为基本数据类型及包装类：调用包装类的<strong>parseXxx()</strong>（int num = Integer.parseInt(str);）可能会报NumberFormatException异常</li>
+</ul></li>
+</ul></li>
+<li>包装类练习题10 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> wrappertestpackage;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">import</span> java.util.Scanner;</span><br><span class="line">   <span class="keyword">import</span> java.util.Vector;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Practice10</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">       <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">           <span class="comment">// 1. 从键盘读入学生成绩</span></span><br><span class="line">           Scanner scan = <span class="keyword">new</span> Scanner(System.in);</span><br><span class="line"></span><br><span class="line">           <span class="comment">// 2. 创建Vector对象，存储学生成绩</span></span><br><span class="line">           Vector v = <span class="keyword">new</span> Vector();</span><br><span class="line"></span><br><span class="line">           <span class="comment">// 找出成绩最高分</span></span><br><span class="line">           <span class="keyword">int</span> maxScore = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">           <span class="keyword">for</span>(;;)&#123;</span><br><span class="line">               System.out.println(<span class="string">&quot;请输入学生成绩（以复数代表输入结束）&quot;</span>);</span><br><span class="line">               <span class="keyword">int</span> score = scan.nextInt();</span><br><span class="line">               <span class="keyword">if</span>(score &lt; <span class="number">0</span>)&#123;</span><br><span class="line">                   <span class="keyword">break</span>;</span><br><span class="line">               &#125;<span class="keyword">else</span> <span class="keyword">if</span>(score &gt; <span class="number">100</span>)&#123;</span><br><span class="line">                   System.out.println(<span class="string">&quot;输入数据非法，请重新输入。&quot;</span>);</span><br><span class="line">                   <span class="keyword">continue</span>;</span><br><span class="line">               &#125;</span><br><span class="line"></span><br><span class="line">               <span class="comment">//JDK5.0前</span></span><br><span class="line">   <span class="comment">//			Integer inScore = new Integer(score);</span></span><br><span class="line">   <span class="comment">//			v.addElement(inScore);</span></span><br><span class="line"></span><br><span class="line">               <span class="comment">// JDK5.0后</span></span><br><span class="line">               v.addElement(score);<span class="comment">//自动装箱</span></span><br><span class="line"></span><br><span class="line">               <span class="keyword">if</span>(maxScore &lt; score)&#123;</span><br><span class="line">                   maxScore = score;</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;</span><br><span class="line"></span><br><span class="line">           System.out.println(<span class="string">&quot;最高成绩为：&quot;</span> + maxScore);</span><br><span class="line"></span><br><span class="line">           <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;v.size(); i++)&#123;</span><br><span class="line">               <span class="keyword">char</span> level = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">               <span class="comment">//JDK5.0前</span></span><br><span class="line">   <span class="comment">//			Object obj = v.elementAt(i);</span></span><br><span class="line">   <span class="comment">//			Integer inScore = (Integer)obj;</span></span><br><span class="line">   <span class="comment">//			int score = inScore.intValue();</span></span><br><span class="line"></span><br><span class="line">               <span class="comment">// JDK5.0后</span></span><br><span class="line">               <span class="keyword">int</span> score = (<span class="keyword">int</span>)v.elementAt(i);</span><br><span class="line">               </span><br><span class="line">               <span class="keyword">if</span>(maxScore - score &lt;= <span class="number">10</span>)&#123;</span><br><span class="line">                   level = <span class="string">&#x27;A&#x27;</span>;</span><br><span class="line">               &#125;<span class="keyword">else</span> <span class="keyword">if</span>(maxScore - score &lt;= <span class="number">20</span>)&#123;</span><br><span class="line">                   level = <span class="string">&#x27;B&#x27;</span>;</span><br><span class="line">               &#125;<span class="keyword">else</span> <span class="keyword">if</span>(maxScore - score &lt;= <span class="number">30</span>)&#123;</span><br><span class="line">                   level = <span class="string">&#x27;C&#x27;</span>;</span><br><span class="line">               &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                   level = <span class="string">&#x27;D&#x27;</span>;</span><br><span class="line">               &#125;</span><br><span class="line"></span><br><span class="line">               System.out.println(<span class="string">&quot;student-&quot;</span> + i + <span class="string">&quot; score is &quot;</span> + score + <span class="string">&quot;, grade is &quot;</span> + level);</span><br><span class="line">           &#125;</span><br><span class="line"></span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure></li>
+</ul></li>
+</ol>
+<h2 id="面试题">面试题</h2>
+<ol type="1">
+<li>区分方法的重写和重载</li>
+</ol>
+<ul>
+<li>二者的概念</li>
+<li>重载和重写的具体规则</li>
+<li>重载不表现为多态性，重写表现为多态性</li>
+</ul>
+<ol start="2" type="1">
+<li><p>谈谈你对多态性的理解</p>
+<ul>
+<li>实现代码的通用性</li>
+<li>举例：Object类中定义的public boolean equals(Object obj) {}。JDBC：使用Java操作程序（获取数据库连接、CRUD）数据库（MySQL、Oracle、DB2、SQL Server）</li>
+<li>抽象类和接口的使用体现了多态性（抽象类、接口不能实例化）</li>
+</ul></li>
+<li><p>多态性是编译时行为，还是运行时行为？</p></li>
+</ol>
+<ul>
+<li><p>证明见InterviewTest.java</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> ProgramExam;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.Random;</span><br><span class="line"></span><br><span class="line"><span class="comment">//面试题：多态是编译时行为还是运行时行为？</span></span><br><span class="line"><span class="comment">//证明如下：</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Animal</span>  </span>&#123;</span><br><span class="line"> </span><br><span class="line">	<span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">eat</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;animal eat food&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Cat</span>  <span class="keyword">extends</span> <span class="title">Animal</span>  </span>&#123;</span><br><span class="line"> </span><br><span class="line">	<span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">eat</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;cat eat fish&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Dog</span>  <span class="keyword">extends</span> <span class="title">Animal</span>  </span>&#123;</span><br><span class="line"> </span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">eat</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;Dog eat bone&quot;</span>);</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Sheep</span>  <span class="keyword">extends</span> <span class="title">Animal</span>  </span>&#123;</span><br><span class="line"> </span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">eat</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;Sheep eat grass&quot;</span>);</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"> </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InterviewTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Animal  <span class="title">getInstance</span><span class="params">(<span class="keyword">int</span> key)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">switch</span> (key) &#123;</span><br><span class="line">		<span class="keyword">case</span> <span class="number">0</span>:</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">new</span> Cat ();</span><br><span class="line">		<span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">new</span> Dog ();</span><br><span class="line">		<span class="keyword">default</span>:</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">new</span> Sheep ();</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">int</span> key = <span class="keyword">new</span> Random().nextInt(<span class="number">3</span>);</span><br><span class="line"></span><br><span class="line">		System.out.println(key);</span><br><span class="line"></span><br><span class="line">		Animal  animal = getInstance(key);</span><br><span class="line">		</span><br><span class="line">		animal.eat();</span><br><span class="line">		 </span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>考察多态的笔试题目</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> ProgramExam;</span><br><span class="line"></span><br><span class="line"><span class="comment">//考查多态的笔试题目：</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InterviewTest1</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">		Base base = <span class="keyword">new</span> Sub();</span><br><span class="line">		base.add(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//		Sub s = (Sub)base;</span></span><br><span class="line"><span class="comment">//		s.add(1,2,3);</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span>... arr)</span> </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;base&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Sub</span> <span class="keyword">extends</span> <span class="title">Base</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span>[] arr)</span> </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;sub_1&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//	public void add(int a, int b, int c) &#123;</span></span><br><span class="line"><span class="comment">//		System.out.println(&quot;sub_2&quot;);</span></span><br><span class="line"><span class="comment">//	&#125;</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ol start="4" type="1">
+<li>为什么super(形参列表)和this(形参列表)调用语句不能同时在一个构造器中出现？</li>
+</ol>
+<ul>
+<li>因为super(形参列表)和this(形参列表)的调用语句都得出现在首行</li>
+</ul>
+<ol start="5" type="1">
+<li>为什么super(形参列表)或this(形参列表)调用语句只能作为构造器的第一句出现？</li>
+</ol>
+<ul>
+<li>无论通过那个构造器创建子类对象，需要保证先初始化父类。目的：当子类继承父类后，继承父类中所有的属性和方法，因此子类有必要知道父类如何为对象进行初始化</li>
+</ul>
+<ol start="6" type="1">
+<li>final、finally、finalize的区别？</li>
+</ol>
+<ul>
+<li>final、finally为关键词，finalize为函数名</li>
+<li>功能差别</li>
+</ul>
+<ol start="7" type="1">
+<li>== 和equals()的区别</li>
+</ol>
+<ul>
+<li>== 运算符
+<ul>
+<li>可用在基本数据类型变量和引用数据类型的变量中</li>
+<li>若比较的是基本数据类型变量，则比较两个变量保存的数据是否相等（不一定类型相同）</li>
+<li>若比较的是引用数据类型变量，则比较两个变量保存的地址是否相等（两个引用是否指向同一个实体 或 两个对象的地址是否相等）</li>
+<li>补充：==符号使用时，必须保证符号左右两边的变量类型一致（不一定相同）</li>
+</ul></li>
+<li>equals()方法的使用
+<ul>
+<li>是一个方法，不是运算符</li>
+<li>只适用于引用数据类型</li>
+<li>Object类中equals()的定义 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object obj)</span></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> (<span class="keyword">this</span> == obj)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//说明：Object类中定义的equals()和==的作用是相同的</span></span><br></pre></td></tr></table></figure></li>
+<li>像String、Date、File、包装类等都重写了Object类的equals()方法。重写后，比较的不再是两个引用指向的地址是否相同，而是比较两个对象的“实体内容”是否相同</li>
+<li>通常情况下，自定义类使用equals()时也通常是比较两个对象的“实体内容”是否相同。那么就需要对Object类中的equals()进行重写 - 重写的原则：比较两个对象的实体 - 注意属性中的String对象比较时要调用equals()函数，不可使用==号 - source --&gt; Generate hashCode() and equals()自动生成自定义类的equals()方法（实际开发中一般使用自动生成的） <img src="/2022/01/11/Coding/Java/05%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%BC%96%E7%A8%8B%E4%B8%AD/64%20Day%20-%2002.png" alt="重写equals()方法原则"> <img src="/2022/01/11/Coding/Java/05%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%BC%96%E7%A8%8B%E4%B8%AD/65%20Day%20-%2002.png" alt="【面试题】==和equals()方法的区别"></li>
+</ul></li>
+</ul>
+<ol start="8" type="1">
+<li>包装类面试题 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> wrappertestpackage;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InterviewTest</span> </span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test1</span><span class="params">()</span></span>&#123;</span><br><span class="line">		Object o1 = <span class="keyword">true</span>? <span class="keyword">new</span> Integer(<span class="number">1</span>) : <span class="keyword">new</span> Double(<span class="number">2.0</span>);</span><br><span class="line">		System.out.println(o1); <span class="comment">// 1.0 [三元运算符的类型自动提升]</span></span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test2</span><span class="params">()</span></span>&#123;</span><br><span class="line">		Object o2;</span><br><span class="line">		<span class="keyword">if</span>(<span class="keyword">true</span>)&#123;</span><br><span class="line">			o2 = <span class="keyword">new</span> Integer(<span class="number">1</span>);</span><br><span class="line">		&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">			o2 = <span class="keyword">new</span> Double(<span class="number">2.0</span>);</span><br><span class="line">		&#125;</span><br><span class="line">		System.out.println(o2); <span class="comment">// 1</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test3</span><span class="params">()</span></span>&#123;</span><br><span class="line">		</span><br><span class="line">		Integer i = <span class="keyword">new</span> Integer(<span class="number">1</span>);</span><br><span class="line">		Integer j = <span class="keyword">new</span> Integer(<span class="number">2</span>);</span><br><span class="line">		System.out.println(i == j);<span class="comment">// false</span></span><br><span class="line">		</span><br><span class="line">		<span class="comment">//Integer内部定义了IntegerCache结构，IntegerCache中定义了Integer[]，保存了从-128~127范围内的整数。</span></span><br><span class="line">		<span class="comment">//如果使用自动装箱的方式，给Integer赋值的范围在-128~127范围内时，可以直接使用数组内的元素，不用再去new对象了，</span></span><br><span class="line">		<span class="comment">//目的是提高效率。因此，</span></span><br><span class="line">		</span><br><span class="line">		Integer m = <span class="number">1</span>;</span><br><span class="line">		Integer n = <span class="number">1</span>;</span><br><span class="line">		System.out.println(m == n); <span class="comment">// true</span></span><br><span class="line">		<span class="comment">//采用自动装箱且赋值整数在-128~127范围内时，引用是直接指向同一地址的</span></span><br><span class="line">		</span><br><span class="line">		Integer x = <span class="number">128</span>;</span><br><span class="line">		Integer y = <span class="number">128</span>;</span><br><span class="line">		System.out.println(x == y);<span class="comment">// false</span></span><br><span class="line">		<span class="comment">//而当赋值整数超出这个范围时，自动装箱需要去new对象，因此两个引用的地址不相同</span></span><br><span class="line">		</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="每日一考">每日一考</h2>
+<ol type="1">
+<li>什么是多态性？什么是虚拟方法调用？
+<ul>
+<li>对象的多态性：父类的引用指向子类的对象</li>
+<li>调用方法时，编译看左边，运行看右边。在编译期，只能调用父类中声明的方法，但在运行期，实际执行的是子类重写父类的方法</li>
+</ul></li>
+<li>方法重写的具体规则有哪些？
+<ul>
+<li>继承关系</li>
+<li>同名同参数的方法</li>
+<li>权限修饰符</li>
+<li>返回值类型</li>
+<li>抛出的异常</li>
+</ul></li>
+<li>super调用构造器，有哪些具体的注意点
+<ul>
+<li>构造器中没有显式调用super(形参列表)和this(形参列表)时，构造器中会自动调用父类的空参构造器</li>
+</ul></li>
+<li>如何实现向下转型？需要注意什么问题？如何解决此问题
+<ul>
+<li>使用强转符(); 有可能出现ClassCastException异常；使用instanceof运算符</li>
+</ul></li>
+<li>==和equals()有什么区别？
+<ul>
+<li>==在比较基本数据类型变量时，比较变量存储的值；比较引用数据类型变量时，比较的是引用指向的地址是否相同；equals()为一个方法，只能用于引用数据类型，默认的equals()和==同样比较的是引用指向的地址，String、Date、包装类等类型的equals()进行了重写，比较的是两个对象的“实体内容”，自定义类通常比较的是“实体内容”，那么也需要重写equals()方法</li>
+<li>回答套路：1. 直接描述，直到无法描述；2. 不记得的知识点，描述使用情景（表示用过，而不是死记硬背）</li>
+</ul></li>
+<li>写出8种基本数据类型及其对应的包装类</li>
+<li>基本数据类型、包装类与String三者之间如何转换
+<ul>
+<li>自动装箱、自动拆箱</li>
+<li>基本数据类型、包装类 --&gt; String: valueOf(Xxx xxx)</li>
+<li>String --&gt; 基本数据类型、包装类：parseXxx(String s)</li>
+</ul></li>
+</ol>
+]]></content>
+      <categories>
+        <category>程序设计</category>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>笔记</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>第四章 面向对象编程-上</title>
+    <url>/2021/11/25/Coding/Java/04%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E4%B8%8A/</url>
+    <content><![CDATA[<h1 id="第4章面向对象编程-上">第4章、面向对象编程-上</h1>
+<h2 id="学习面向对象内容的三条主线">学习面向对象内容的三条主线：</h2>
+<ol type="1">
+<li><span class="math inline">\(Java\)</span>类及类的成员：属性、方法、构造器；代码块、内部类（<span class="math inline">\(Java\)</span>两大要素：类、对象）</li>
+<li>面向对象的三大特征：封装性、继承性、多态性（、抽象性）（关注对应代码落地）</li>
+<li>其他关键字：<span class="math inline">\(this\)</span>、<span class="math inline">\(super\)</span>、<span class="math inline">\(static\)</span>、<span class="math inline">\(final\)</span>、<span class="math inline">\(abstract\)</span>、<span class="math inline">\(interface\)</span>、<span class="math inline">\(package\)</span>、<span class="math inline">\(import\)</span>等</li>
+</ol>
+<h2 id="目录">目录</h2>
+<ol type="1">
+<li>一、面向过程与面向对象</li>
+<li>二、Java 基本元素：类和对象</li>
+<li>三、对象的创建和使用</li>
+<li>四、类的成员之一：属性</li>
+<li>五、类的成员之二：方法</li>
+<li>六、再谈方法</li>
+<li>七、OOP 特征之一：封装与隐藏</li>
+<li>八、类的成员之三：构造器（构造方法，constructor）</li>
+<li>扩展：JavaBean</li>
+<li>扩展：UML 类图</li>
+<li>九、关键字：this</li>
+<li>十、关键字：package、import</li>
+<li>每日一考（构造器、this、package、import）</li>
+<li>接下来是：项目二</li>
+</ol>
+<span id="more"></span>
+<h2 id="一面向过程与面向对象">一、面向过程与面向对象</h2>
+<ol type="1">
+<li><p>面向过程（<span class="math inline">\(POP:\)</span><span class="math inline">\(Procedure\)</span> <span class="math inline">\(Oriented\)</span> <span class="math inline">\(Programming\)</span>）与面向对象（<span class="math inline">\(OOP:\)</span><span class="math inline">\(Object\)</span> <span class="math inline">\(Oriented\)</span> <span class="math inline">\(Programming\)</span>）</p>
+<ul>
+<li><p>二者都是一种思想，面向对象是相对于面向过程而言的。</p>
+<ul>
+<li>面向过程，强调的是<strong>功能行为</strong>，以函数为最小单位，考虑<strong>怎么做</strong>。</li>
+<li>面向对象，将功能封装进对象，强调<strong>具备了功能的对象</strong>，以类/对象为最小单位，考虑<strong>谁来做</strong></li>
+</ul></li>
+<li><p>举例：人把大象装进冰箱</p>
+<ul>
+<li><p>面向过程：①把冰箱门打开；②抬起大象，塞进冰箱；③把冰箱门关闭</p></li>
+<li><p>面向对象：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">人&#123; </span><br><span class="line">	打开(冰箱)&#123;</span><br><span class="line">		冰箱.开门(); </span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	抬起(大象)&#123;</span><br><span class="line">		大象.进入(冰箱);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	关闭(冰箱)&#123;</span><br><span class="line">		冰箱.关门();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">冰箱&#123;</span><br><span class="line">	开门()&#123;...&#125;</span><br><span class="line">	关门()&#123;...&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">大象&#123;</span><br><span class="line">	进入(冰箱) &#123;...&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul></li>
+</ul></li>
+<li><p>面向对象的三大特征</p>
+<ul>
+<li>封装（<span class="math inline">\(Encapsulation\)</span>）</li>
+<li>继承（<span class="math inline">\(Inheritance\)</span>）</li>
+<li>多态（<span class="math inline">\(Polymorphism\)</span>）</li>
+</ul></li>
+<li><p>面向对象的思想概述</p>
+<ul>
+<li>程序员从面向过程的<strong>执行者</strong>转化为了面向对象的<strong>指挥者</strong></li>
+<li>面向对象分析方法分析问题的思路和步骤
+<ul>
+<li>根据问题需要，选择问题所针对的现实世界中的实体</li>
+<li>从实体中寻找解决问题相关的属性和功能，这些属性和功能就形成了概念世界中的类</li>
+<li>把抽象的实体用计算机语言进行描述，形成计算机世界中类的定义，即借助某种程序语言，把类构造成计算机能够识别和处理的数据结构</li>
+<li>将类实例化成计算机世界中的对象，对象是计算机世界中解决问题的最终工具</li>
+</ul></li>
+</ul></li>
+</ol>
+<h2 id="二java基本元素类和对象">二、<span class="math inline">\(Java\)</span>基本元素：类和对象</h2>
+<ol type="1">
+<li><p>面向对象的思想概述</p>
+<ul>
+<li>类（<span class="math inline">\(Class\)</span>）和对象（<span class="math inline">\(Object\)</span>）是面向对象的核心概念
+<ul>
+<li>类是对一类事物的描述，是抽象的、概念上的定义。例如水果、花、人，其在代码上的体现类似于<span class="math inline">\(int\)</span>、<span class="math inline">\(char\)</span>、<span class="math inline">\(String\)</span>。</li>
+<li>对象是实际存在的该事物的个体，也被称为实例（<span class="math inline">\(Instance\)</span>）。例如苹果、玫瑰花、某个具体的人，在代码上的体现类似于某个数据类型声明的变量。</li>
+<li>面向对象程序设计的重点是<strong>类的设计</strong>；类的设计，其实就是<strong>类的成员的设计</strong>。</li>
+</ul></li>
+<li>“万事万物皆对象”
+<ul>
+<li>Java语言范畴中，我们都将功能、结构等封装到类中，通过类的实例化，来调用具体的功能结构
+<ul>
+<li>Scanner、String等</li>
+<li>文件，File</li>
+<li>网络资源，URL</li>
+</ul></li>
+<li>涉及到Java语言与前端Html、后端数据库交互时，前后端的结构在Java层面交互时都体现为类和对象</li>
+</ul></li>
+</ul></li>
+<li><p><span class="math inline">\(Java\)</span>类及类的成员</p>
+<ul>
+<li>Java代码世界是由诸多个不同功能的类构成的</li>
+<li>Java中常见的类成员有：
+<ul>
+<li>属性 = 成员变量 = field = 域、字段，对应类中的成员变量</li>
+<li>方法 = 成员方法 = 函数 = method，对应类中的成员方法</li>
+</ul></li>
+</ul></li>
+</ol>
+<h2 id="三对象的创建和使用">三、对象的创建和使用</h2>
+<ol type="1">
+<li><p>对象创建：<code>类名 对象名 = new 类名()</code>;</p>
+<ul>
+<li>创建类的对象 = 类的实例化 = 实例化类</li>
+</ul></li>
+<li><p>类和对象的使用（面向对象思想落地的实现）</p>
+<ul>
+<li>创建类，设计类的成员</li>
+<li>创建类的对象</li>
+<li>通过<code>"对象.属性"</code>或<code>"对象.方法"</code>调用对象的结构</li>
+</ul></li>
+<li><p>如果创建了一个类的多个对象，则每个对象都独立的拥有一套类的属性（非static），修改其中一个对象的属性不影响另一个对象的属性值。</p></li>
+<li><p>对象的内存解析</p></li>
+</ol>
+<figure>
+<img src="/2021/11/25/Coding/Java/04%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E4%B8%8A/62%20Day4%20-%2001.png" alt="对象的内存解析"><figcaption aria-hidden="true">对象的内存解析</figcaption>
+</figure>
+<p>内存解析的说明：引用数据类型的变量只可能存两类值：null 或 地址值（含变量的类型）</p>
+<h2 id="四类的成员之一属性">四、类的成员之一：属性</h2>
+<ul>
+<li>属性（成员变量）VS 局部变量
+<ul>
+<li>相同点
+<ul>
+<li>定义格式：数据类型 变量名 = 变量值;</li>
+<li>先声明后使用</li>
+<li>都有其对应的作用域</li>
+</ul></li>
+<li>不同点
+<ul>
+<li>在类中声明的位置不同：
+<ul>
+<li>属性直接定义在类的一对{}中、方法体外；</li>
+<li>局部变量是声明在方法内、方法形参、代码块内、构造器形参、构造器内部的变量。</li>
+</ul></li>
+<li>权限修饰符不同：
+<ul>
+<li>属性：可在声明属性时，指明其权限、使用权限修饰符（常见修饰符：private、public、缺省、protected）</li>
+<li>局部变量：不可使用权限修饰符，只能用final（其权限可由方法修饰符体现）</li>
+</ul></li>
+<li>默认初始化值
+<ul>
+<li>属性：根据其类型，都有其初始化值<br> 整形（byte、short、int、long）：0<br> 浮点型（float、double）：0.0<br> 字符型（char）：0或'000'<br> 布尔型（boolean）：false<br> 引用数据类型（类、接口、数组）：null<br></li>
+<li>局部变量：没有默认初始化值，在调用局部变量前必须要显式赋值（特别的，形参在调用时赋值即可）。</li>
+</ul></li>
+<li>在内存中加载的位置
+<ul>
+<li>属性：加载到堆空间中（非static）</li>
+<li>局部变量：加载到栈空间</li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+<h2 id="五类的成员之二方法">五、类的成员之二：方法</h2>
+<ul>
+<li><p>方法：描述类应该具有的功能</p>
+<ul>
+<li><p>方法的声明：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">权限修饰符 返回值类型 方法名([形参列表])&#123;</span><br><span class="line">	方法体</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>说明</p>
+<ul>
+<li>权限修饰符：private、public、缺省、protected</li>
+<li>返回值类型：有返回值 VS 无返回值
+<ul>
+<li>如方法有返回值，则必须在方法声明时，指定返回值类型。同时，方法中，需要使用return关键字来返回指定类型的变量或常量</li>
+<li>如方法无返回值，则方法声明时使用void来表示。无返回值的方法中无需使用return，但可使用“return;”结束方法。（return后不能直接声明其他语句）</li>
+</ul></li>
+<li>方法名：标识符，遵循标识符的命名规则和规范，“见名知意”</li>
+<li>形参列表：
+<ul>
+<li>方法可定义0个、1个或多个形参</li>
+<li>格式：<code>数据类型1 形参1, 数据类型2 形参2, ...</code></li>
+</ul></li>
+<li>方法体：方法功能的体现。</li>
+</ul></li>
+<li><p>方法的使用中，可调用当前类的属性和方法。方法中不能定义方法</p></li>
+</ul></li>
+<li><p>练习</p>
+<ol type="1">
+<li>编写教师类和学生类，并通过测试类创建对象进行测试。</li>
+<li>创建一个Person类，其定义如下：要求(1)创建Person类的对象，设置该对象的name、age、sex属性，调用study方法，输出字符串"studying"，调用showAge()方法显示age值，调用addAge()方法给对象的age属性增加2岁；(2)创建第二个对象，执行上述操作，体会同一个类的不同对象之间的关系</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PersonTest</span> </span>&#123; <span class="comment">//测试类</span></span><br><span class="line"></span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">          <span class="comment">//构造Person类的对象</span></span><br><span class="line">          Person p1 = <span class="keyword">new</span> Person();</span><br><span class="line"></span><br><span class="line">          <span class="comment">//调用对象的结构：属性和方法</span></span><br><span class="line">          <span class="comment">//调用属性：“对象.属性”</span></span><br><span class="line">          p1.name = <span class="string">&quot;tom&quot;</span>;</span><br><span class="line">          p1.age = <span class="number">18</span>;</span><br><span class="line">          p1.sex = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">          <span class="comment">//调用方法：“对象.方法”</span></span><br><span class="line">          p1.study();</span><br><span class="line">          p1.showAge();</span><br><span class="line">          System.out.println(p1.addAge(<span class="number">2</span>));</span><br><span class="line"></span><br><span class="line">          Person p2 = <span class="keyword">new</span> Person();</span><br><span class="line">          p2.name = <span class="string">&quot;sam&quot;</span>;</span><br><span class="line">          p2.age = <span class="number">12</span>;</span><br><span class="line">          p2.sex = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">          <span class="comment">//调用方法：“对象.方法”</span></span><br><span class="line">          p2.study();</span><br><span class="line">          p2.showAge();</span><br><span class="line">          System.out.println(p2.addAge(-<span class="number">2</span>));</span><br><span class="line"></span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123; <span class="comment">//Person类</span></span><br><span class="line">      String name;</span><br><span class="line">      <span class="keyword">int</span> age;</span><br><span class="line">      <span class="comment">/**</span></span><br><span class="line"><span class="comment">       * sex: 0 - Female; 1 - Male;</span></span><br><span class="line"><span class="comment">       */</span></span><br><span class="line">      <span class="keyword">int</span> sex;</span><br><span class="line"></span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">study</span><span class="params">()</span></span>&#123;</span><br><span class="line">          System.out.println(<span class="string">&quot;studying&quot;</span>);</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">showAge</span><span class="params">()</span></span>&#123;</span><br><span class="line">          System.out.println(age);</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">addAge</span><span class="params">(<span class="keyword">int</span> i)</span></span>&#123;</span><br><span class="line">          age += i;</span><br><span class="line">          <span class="keyword">return</span> age;</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<ol start="3" type="1">
+<li>利用面向对象的编程方法，设计类Circle计算圆的面积。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CircleTest</span> </span>&#123;</span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">          Circle c1 = <span class="keyword">new</span> Circle();</span><br><span class="line">          c1.radius = <span class="number">10</span>;</span><br><span class="line">          System.out.println(c1.area());</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="class"><span class="keyword">class</span> <span class="title">Circle</span></span>&#123;</span><br><span class="line">  </span><br><span class="line">      <span class="keyword">double</span> radius;</span><br><span class="line">  </span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">area</span><span class="params">()</span></span>&#123;</span><br><span class="line">          <span class="keyword">return</span> Math.PI * radius * radius;</span><br><span class="line">      &#125;</span><br><span class="line">  </span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<ol start="4" type="1">
+<li>编写程序，声明一个method方法，在方法中打印一个10*8的*型矩阵，在main方法中调用该方法</li>
+</ol>
+<p><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Exer3</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        Exer3 m = <span class="keyword">new</span> Exer3();</span><br><span class="line">        m.method();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">method</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;<span class="number">10</span>; i++)&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> j=<span class="number">0</span>; j&lt;<span class="number">8</span>; j++)</span><br><span class="line">                System.out.print(<span class="string">&quot;* &quot;</span>);</span><br><span class="line">            System.out.println();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<ol start="5" type="1">
+<li>修改上一个程序，在method方法中，除打印10*8的*型矩阵外，再计算该矩形的面积，并将其作为方法返回值。在main方法中调用该方法，接收返回的面积值并打印。</li>
+</ol>
+<p><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Exer3</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        Exer3 m = <span class="keyword">new</span> Exer3();</span><br><span class="line">        <span class="keyword">int</span> area = m.method();</span><br><span class="line">        System.out.println(<span class="string">&quot;面积为：&quot;</span>+ area);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">method</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;<span class="number">10</span>; i++)&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> j=<span class="number">0</span>; j&lt;<span class="number">8</span>; j++)</span><br><span class="line">                System.out.print(<span class="string">&quot;* &quot;</span>);</span><br><span class="line">            System.out.println();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">10</span>*<span class="number">8</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<ol start="6" type="1">
+<li>修改上一个程序，在method方法提供m和n两个参数，方法中打印m*n的*型矩阵，并计算该矩阵的面积，将其作为方法返回值。在main方法中调用该方法，接收返回的面积值并打印。</li>
+</ol>
+<p><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Exer3</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        Exer3 m = <span class="keyword">new</span> Exer3();</span><br><span class="line">        <span class="keyword">int</span> area = m.method(<span class="number">2</span>, <span class="number">10</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;面积为：&quot;</span>+ area);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">method</span><span class="params">(<span class="keyword">int</span> m, <span class="keyword">int</span> n)</span></span>&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;m; i++)&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> j=<span class="number">0</span>; j&lt;n; j++)</span><br><span class="line">                System.out.print(<span class="string">&quot;* &quot;</span>);</span><br><span class="line">            System.out.println();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> m*n;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<ol start="7" type="1">
+<li>对象数组题目：定义类Student，包含3个属性：学号number(int)，年级state(int)，成绩score(int)，创建20个学生对象，学号为1到20，年级和成绩由随机数确定。
+<ul>
+<li>问题1：打印出3年级(state为3)的学生信息</li>
+<li>问题2：使用冒泡排序按学生成绩排序，并遍历所有学生信息</li>
+<li>提示：
+<ul>
+<li>生成随机数：Math.random();返回值为double类型</li>
+<li>四舍五入取整：Math.round(double d);返回值为long类型</li>
+</ul></li>
+</ul></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"> <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Student</span> </span>&#123;</span><br><span class="line"> 	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">                   <span class="comment">//此处只是开辟一块20个Student类型的对象数组空间，该空间的首地址值赋值给数组名stu</span></span><br><span class="line">                   <span class="comment">//定义对象数组后，每个数组元素初始值为null。</span></span><br><span class="line">                   <span class="comment">//如不为每个元素初始化将会在后面调用时产生NullPointerException异常</span></span><br><span class="line"> 		Student[] stu = <span class="keyword">new</span> Student[<span class="number">20</span>];</span><br><span class="line"> 		<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;stu.length; i++)&#123;</span><br><span class="line">                   <span class="comment">//数组元素的类型为Student，故初始化时使用new Student()分配内存空间</span></span><br><span class="line">                   <span class="comment">//并将空间的地址赋值给元素</span></span><br><span class="line">                   <span class="comment">//String、int等类型无需new，是因为数组元素为基本数据类型或可以直接赋值（地址传递），</span></span><br><span class="line">                   <span class="comment">//如String s = &quot;15sadw&quot;;（字符串常量或变量传递给字符串数组元素是地址传递）</span></span><br><span class="line">                   <span class="comment">//int类型数组元素的值是直接存在堆的相应位置的，无需再次分配空间</span></span><br><span class="line">                   <span class="comment">//分配内存空间就要使用 new关键字，并且返回空间的首地址值</span></span><br><span class="line">                   <span class="comment">//而自定义的类声明的对象也可进行地址传递,但需要先new一个该类型的变量然后再地址传递，</span></span><br><span class="line">                   <span class="comment">//也可直接开辟一块内存空间（new Student()），并将该空间首地址值赋给数组元素</span></span><br><span class="line"> 		stu[i] = <span class="keyword">new</span> Student();</span><br><span class="line"> 			stu[i].setNumber(i+<span class="number">1</span>);</span><br><span class="line"> 			stu[i].setState((<span class="keyword">int</span>)Math.round((Math.random()*<span class="number">5</span>)));</span><br><span class="line"> 			stu[i].setScore((<span class="keyword">int</span>)Math.round((Math.random()*<span class="number">100</span>)));</span><br><span class="line"> 		&#125;</span><br><span class="line"> 		</span><br><span class="line"> 		<span class="comment">//遍历输出</span></span><br><span class="line"> 		System.out.println(<span class="string">&quot;初始化：&quot;</span>);</span><br><span class="line"> 		<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;stu.length; i++)&#123;</span><br><span class="line"> 			System.out.println(stu[i].getNumber() + <span class="string">&quot;\tis @ grade_&quot;</span> + stu[i].getState() + <span class="string">&quot;, score is &quot;</span> + stu[i].getScore());</span><br><span class="line"> 		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="comment">//输出年级为3的学生信息</span></span><br><span class="line"> 		System.out.println(<span class="string">&quot;3年级学生信息：&quot;</span>);</span><br><span class="line"> 		<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;stu.length; i++)&#123;</span><br><span class="line"> 			<span class="keyword">if</span>(stu[i].getState() == <span class="number">3</span>)</span><br><span class="line"> 				System.out.println(stu[i].getNumber() + <span class="string">&quot;\tis @ grade_&quot;</span> + stu[i].getState() + <span class="string">&quot;, score is &quot;</span> + stu[i].getScore());</span><br><span class="line"> 		&#125;</span><br><span class="line"> 		</span><br><span class="line">		<span class="comment">//冒泡排序</span></span><br><span class="line"> 		<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;stu.length; i++)&#123;</span><br><span class="line"> 			<span class="keyword">for</span>(<span class="keyword">int</span> j=<span class="number">0</span>; j&lt;stu.length-i-<span class="number">1</span>; j++)&#123;</span><br><span class="line"> 				<span class="keyword">if</span>(stu[j].getScore() &gt; stu[j+<span class="number">1</span>].getScore())&#123;</span><br><span class="line"> 					Student temp = <span class="keyword">new</span> Student();</span><br><span class="line"> 					temp = stu[j];</span><br><span class="line"> 					stu[j] = stu[j+<span class="number">1</span>];</span><br><span class="line"> 					stu[j+<span class="number">1</span>] = temp;</span><br><span class="line"> 				&#125;</span><br><span class="line"> 			&#125;</span><br><span class="line"> 		&#125;</span><br><span class="line"> 		</span><br><span class="line"> 		<span class="comment">//遍历输出</span></span><br><span class="line">	System.out.println(<span class="string">&quot;排完序后：&quot;</span>);</span><br><span class="line"> 		<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;stu.length; i++)&#123;</span><br><span class="line"> 			System.out.println(stu[i].getNumber() + <span class="string">&quot;\tis @ grade_&quot;</span> + stu[i].getState() + <span class="string">&quot;, score is &quot;</span> + stu[i].getScore());</span><br><span class="line"> 		&#125;</span><br><span class="line"> 	&#125;</span><br><span class="line"> 	</span><br><span class="line"> 	<span class="comment">/**</span></span><br><span class="line"><span class="comment"> 	 * 学号, int型</span></span><br><span class="line"><span class="comment"> 	 */</span></span><br><span class="line"> 	<span class="keyword">int</span> number;</span><br><span class="line"> 	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 年级, int型</span></span><br><span class="line"><span class="comment"> 	 */</span></span><br><span class="line"> 	<span class="keyword">int</span> state;</span><br><span class="line"> 	<span class="comment">/**</span></span><br><span class="line"><span class="comment"> 	 * 分数, int型</span></span><br><span class="line"><span class="comment"> 	 */</span></span><br><span class="line"> 	<span class="keyword">int</span> score;</span><br><span class="line"> 	</span><br><span class="line"> 	<span class="comment">/**</span></span><br><span class="line"><span class="comment"> 	 * </span></span><br><span class="line"><span class="comment"> 	 * <span class="doctag">@Description</span> 获得学生的分数</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@author</span> Hunter Wu</span></span><br><span class="line"><span class="comment"> 	 * <span class="doctag">@date</span> 2020年10月16日下午4:40:40</span></span><br><span class="line"><span class="comment"> 	 * <span class="doctag">@return</span> int型 分数</span></span><br><span class="line"><span class="comment"> 	 */</span></span><br><span class="line"> 	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getScore</span><span class="params">()</span></span>&#123;</span><br><span class="line"> 		<span class="keyword">return</span> score;</span><br><span class="line"> 	&#125;</span><br><span class="line"> 	</span><br><span class="line"> 	<span class="comment">/**</span></span><br><span class="line"><span class="comment"> 	 * </span></span><br><span class="line"><span class="comment"> 	 * <span class="doctag">@Description</span> 获得学生的学号</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@author</span> Hunter Wu</span></span><br><span class="line"><span class="comment"> 	 * <span class="doctag">@date</span> 2020年10月16日下午4:40:58</span></span><br><span class="line"><span class="comment"> 	 * <span class="doctag">@return</span> int型 学号</span></span><br><span class="line"><span class="comment"> 	 */</span></span><br><span class="line"> 	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getNumber</span><span class="params">()</span></span>&#123;</span><br><span class="line"> 		<span class="keyword">return</span> number;</span><br><span class="line"> 	&#125;</span><br><span class="line"> 	</span><br><span class="line"> 	<span class="comment">/**</span></span><br><span class="line"><span class="comment"> 	 * </span></span><br><span class="line"><span class="comment"> 	 * <span class="doctag">@Description</span> 获得学生的年级</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@author</span> Hunter Wu</span></span><br><span class="line"><span class="comment"> 	 * <span class="doctag">@date</span> 2020年10月16日下午4:42:02</span></span><br><span class="line"><span class="comment"> 	 * <span class="doctag">@return</span> int型 年级</span></span><br><span class="line"><span class="comment"> 	 */</span></span><br><span class="line"> 	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getState</span><span class="params">()</span></span>&#123;</span><br><span class="line"> 		<span class="keyword">return</span> state;</span><br><span class="line"> 	&#125;</span><br><span class="line"> 	</span><br><span class="line"> 	<span class="comment">/**</span></span><br><span class="line"><span class="comment"> 	 * </span></span><br><span class="line"><span class="comment"> 	 * <span class="doctag">@Description</span> 设置学生的成绩</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@author</span> Hunter Wu</span></span><br><span class="line"><span class="comment"> 	 * <span class="doctag">@date</span> 2020年10月16日下午4:51:16</span></span><br><span class="line"><span class="comment"> 	 * <span class="doctag">@param</span> score</span></span><br><span class="line"><span class="comment"> 	 */</span></span><br><span class="line"> 	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setScore</span><span class="params">(<span class="keyword">int</span> score)</span></span>&#123;</span><br><span class="line"> 		<span class="keyword">this</span>.score = score;</span><br><span class="line"> 	&#125;</span><br><span class="line"> 	</span><br><span class="line"> 	<span class="comment">/**</span></span><br><span class="line"><span class="comment"> 	 * </span></span><br><span class="line"><span class="comment"> 	 * <span class="doctag">@Description</span> 设置学生的学号</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@author</span> Hunter Wu</span></span><br><span class="line"><span class="comment"> 	 * <span class="doctag">@date</span> 2020年10月16日下午4:50:57</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> number</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setNumber</span><span class="params">(<span class="keyword">int</span> number)</span></span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.number = number;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * </span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@Description</span> 设置学生的年级</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@author</span> Hunter Wu</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@date</span> 2020年10月16日下午4:51:31</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> state</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setState</span><span class="params">(<span class="keyword">int</span> state)</span></span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.state = state;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>每日一考</p></li>
+</ul>
+<ol type="1">
+<li><p>面向对象思想编程内容的三条主线分别是什么</p>
+<ul>
+<li><span class="math inline">\(Java\)</span>类及类的成员：属性、方法、构造器、代码块、内部类</li>
+<li>面向对象三大特征：封装性、继承性、多态性（，抽象性）</li>
+<li>其他关键字：<span class="math inline">\(this\)</span>、<span class="math inline">\(super\)</span>、<span class="math inline">\(static\)</span>、<span class="math inline">\(final\)</span>、<span class="math inline">\(abstract\)</span>、<span class="math inline">\(interface\)</span>、<span class="math inline">\(package\)</span>、<span class="math inline">\(import\)</span>等</li>
+</ul></li>
+<li><p>面向对象的编程思想？【面试】</p></li>
+<li><p>谈谈你对面向对象中类和对象的理解，并指出二者的关系<br> 面试中，先进行一些描述，然后再举出一些例子，但是举的例子应为开发场景中的例子（比如我们和控制台交互需要提供一个类，这个API给我们提供好了叫做Scanner类，这是类的概念。我们真正执行的时候需要一个Scanner对象，然后通过这个对象来调用他所定义的功能方法，去完成与控制台的交互）</p>
+<ul>
+<li>类：抽象的、概念上的内容</li>
+<li>对象：实实在在存在的一个实体</li>
+<li>对象是由类派生出来的（new出来的）</li>
+</ul></li>
+<li><p>面向对象思想的体现一：类和对象的创建和执行操作有那三步？</p>
+<ul>
+<li>创建类</li>
+<li>类的实例化</li>
+<li>调用对象的结构：“对象.属性”、“对象.方法”</li>
+</ul></li>
+<li><p>类的方法内是否可以定义变量？是否可以调用属性？是否可以定义方法？是否可以调用方法？</p>
+<p>是，是，否，是</p></li>
+</ol>
+<h3 id="补jvm内存结构">补：JVM内存结构</h3>
+<ul>
+<li>编译完源程序后，生成一个或多个字节码文件。我们使用JVM中的类的加载器和解释器对生成的字节码文件进行解释运行。意味着，需要将字节码文件对应的类加载到内存中，涉及到内存解析</li>
+</ul>
+<figure>
+<img src="/2021/11/25/Coding/Java/04%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E4%B8%8A/JVM内存结构.jpg" alt="JVM内存结构"><figcaption aria-hidden="true">JVM内存结构</figcaption>
+</figure>
+<ul>
+<li>各个结构
+<ul>
+<li>虚拟机栈即为平时提到的栈结构。将局部变量存放在栈结构中</li>
+<li>堆，将new出来的结构（如数组、对象）加载在堆空间中。补充：对象的属性（非static）加载在堆空间中</li>
+<li>方法区：类的加载信息（方法、代码块等）、常量池、静态域（static）</li>
+<li>本地方法栈：调用本地C/C++时使用</li>
+</ul></li>
+</ul>
+<h3 id="补匿名对象">补：匿名对象</h3>
+<ol type="1">
+<li><p>创建的对象没有显式的赋给一个变量名，即为匿名对象</p></li>
+<li><p>特征：一个匿名对象只能使用一次。</p></li>
+<li><p>使用：无需另外定义一个变量即可创建一个对象并使用</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Exer_2_1</span> </span>&#123;</span><br><span class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">         Phone p = <span class="keyword">new</span> Phone();</span><br><span class="line">         System.out.println(p);</span><br><span class="line"></span><br><span class="line">         p.sendEmail();</span><br><span class="line">         p.playGame();</span><br><span class="line"></span><br><span class="line">         <span class="comment">//匿名对象</span></span><br><span class="line">         <span class="keyword">new</span> Phone().price = <span class="number">1999</span>;</span><br><span class="line">         <span class="keyword">new</span> Phone().showPrice();</span><br><span class="line">	</span><br><span class="line">         <span class="comment">//匿名对象的使用</span></span><br><span class="line">         PhoneMall mall = <span class="keyword">new</span> PhoneMall();</span><br><span class="line">         mall.show(<span class="keyword">new</span> Phone());</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PhoneMall</span></span>&#123;</span><br><span class="line">         <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">show</span><span class="params">(Phone phone)</span></span>&#123;</span><br><span class="line">             phone.sendEmail();</span><br><span class="line">             phone.playGame();</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"> <span class="class"><span class="keyword">class</span> <span class="title">Phone</span></span>&#123;</span><br><span class="line">  <span class="keyword">double</span> price;</span><br><span class="line">    </span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sendEmail</span><span class="params">()</span></span>&#123;</span><br><span class="line">    </span><br><span class="line">  &#125;</span><br><span class="line">    </span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">playGame</span><span class="params">()</span></span>&#123;</span><br><span class="line">    </span><br><span class="line">  &#125;</span><br><span class="line">    </span><br><span class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">showPrice</span><span class="params">()</span></span>&#123;</span><br><span class="line">         System.out.println(<span class="string">&quot;手机价格为：&quot;</span> + price);</span><br><span class="line">     &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="六再谈方法">六、再谈方法</h2>
+<ol type="1">
+<li><p>方法的重载（overload）</p>
+<ul>
+<li>重载的概念
+<ul>
+<li>在同一个类中，允许存在一个以上的同名方法，<strong>只要</strong>它们的参数个数或者类型不同即可。</li>
+</ul></li>
+<li>重载的特点：
+<ul>
+<li>与返回值类型无关，只看参数列表,且参数列表必须不同。(参数个数或参数类型)。调用时，根据方法参数列表的不同来区别。</li>
+<li><strong>两同一不同</strong>：同一个类、相同方法名；参数列表不同：参数个数或参数类型或不同类型的参数顺序不同</li>
+<li><strong>跟方法的权限修饰符、返回值类型、形参变量名、方法体都没有关系</strong></li>
+</ul></li>
+<li>重载示例</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">//返回两个整数的和</span></span><br><span class="line"> <span class="function"><span class="keyword">int</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y)</span></span>&#123;</span><br><span class="line">     <span class="keyword">return</span> x+y;</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> <span class="comment">//返回三个整数的和</span></span><br><span class="line"> <span class="function"><span class="keyword">int</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y, <span class="keyword">int</span> z)</span></span>&#123;</span><br><span class="line">     <span class="keyword">return</span> x+y+z;</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> <span class="comment">//返回两个小数的和</span></span><br><span class="line"> <span class="function"><span class="keyword">double</span> <span class="title">add</span><span class="params">(<span class="keyword">double</span> x, <span class="keyword">double</span> y)</span></span>&#123;</span><br><span class="line">     <span class="keyword">return</span> x+y;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在通过对象调用方法时，如何确定某一个指定的方法：方法名--&gt;参数列表</li>
+</ul></li>
+<li><p>可变形参的方法</p>
+<ul>
+<li>定义：JavaSE5.0中提供了Varargs(variable number of arguments)机制，<strong>允许直接定义能和多个实参相匹配的形参</strong>。从而可以用一种更简单的方式，来传递个数可变的实参。</li>
+<li>使用：
+<ul>
+<li>格式：<code>数据类型 ... 变量名</code></li>
+<li>当调用可变个数形参的方法时，传入的参数个数可以是0个、1个、2个...</li>
+<li>可变个数形参的方法与本类中其他的方法名相同、形参不同的方法构成重载</li>
+<li>可变个数形参的方法与本类中其他的方法名相同、形参相同的方法不构成重载。（5.0前使用数组传入多个参数(String[] args)；5.0后使用...表示可变个数参数(String ... args)，在形参变量的使用上和数组使用方式相同）</li>
+<li>可变个数形参在方法的形参中，必须声明在末尾（防止编译器分不清参数该传给谁）</li>
+<li>可变个数形参在方法的形参中，最多只能声明一个可变形参</li>
+</ul></li>
+</ul></li>
+<li><p>方法参数的值传递机制（难重点）</p>
+<ul>
+<li>变量赋值：传递的是栈空间的值
+<ul>
+<li>如变量是基本数据类型，则赋值的是变量所保存的数据值</li>
+<li>如变量是引用数据类型，则赋值的是变量所保存的数据地址值</li>
+</ul></li>
+<li>形参与实参
+<ul>
+<li>形参：方法定义时，声明的小括号内的参数</li>
+<li>实参：方法调用时，实际传递给形参的数据</li>
+</ul></li>
+<li><strong>方法形参的传递机制：值传递（不是引用传递）</strong>
+<ul>
+<li>如参数是基本数据类型，则实参赋给形参的值是实参所保存的数据值</li>
+<li>如参数是引用数据类型，则实参赋给形参的值是实参所保存的数据地址值</li>
+</ul></li>
+</ul></li>
+<li><p>递归方法</p>
+<ul>
+<li>定义：一个方法体内调用它本身</li>
+</ul></li>
+<li><p>每日一考</p>
+<ul>
+<li>什么是方法的重载
+<ul>
+<li>两同一不同</li>
+</ul></li>
+<li>说明Java方法中的参数传递机制的具体体现
+<ul>
+<li>如参数为基本数据类型，则传递的是...</li>
+<li>如参数是引用数据类型，则传递的是...</li>
+</ul></li>
+<li>成员变量和局部变量在声明的位置上、是否有默认初始化值上、是否能有权限修饰符修饰上、内存分配的位置上有何不同
+<ul>
+<li>成员变量声明在类中，有默认初始化值，可有权限修饰符，内存分配在堆中</li>
+<li>局部变量声明在方法中，无默认初始化值，不可有权限修饰符，内存分配在栈中</li>
+</ul></li>
+<li>谈谈return关键字的使用
+<ul>
+<li>返回方法执行结果</li>
+<li>结束方法执行</li>
+</ul></li>
+</ul></li>
+<li><p>面试题</p>
+<ul>
+<li>方法的重载与重写的区别？</li>
+<li>throws  throw</li>
+<li>String  StringBuffer StringBuilder</li>
+<li>Collection  Collections</li>
+<li>final  finally </li>
+<li>...相似的概念或类及方法及时总结</li>
+</ul></li>
+</ol>
+<h2 id="七oop特征之一封装与隐藏">七、<span class="math inline">\(OOP\)</span>特征之一：封装与隐藏</h2>
+<ol type="1">
+<li>为什么要封装和隐藏？其作用和含义是什么？
+<ul>
+<li>我们程序设计追求“高内聚，低耦合”。
+<ul>
+<li>高内聚 ：类的内部数据操作细节自己完成，不允许外部干涉；</li>
+<li>低耦合 ：仅对外暴露少量的方法用于使用。</li>
+</ul></li>
+<li>隐藏对象内部的复杂性，只外公开简单接口。便于外界调用从而提高系统的可扩展性、可维护性。通俗的说，把该隐藏的隐藏起来，该暴露的暴露出来。 <strong>这就是封装性的设计思想</strong></li>
+</ul></li>
+<li>问题的引入：
+<ul>
+<li>当我们创建一个类的对象后，我们可以通过<code>"对象.属性"</code>的方式，对对象的属性进行赋值。这里，赋值操作要受到属性的数据类型和存储范围的制约，但是除此之外，没有其他制约条件。而在实际问题中，我们往往需要给属性赋值加入额外的限制条件（实际问题的逻辑限制），这个条件不能在属性声明时体现，我们只能通过属性所在类中的方法进行限制条件的添加。</li>
+<li>同时，我们需要避免用户再使用<code>"对象.属性"</code>的方式对属性进行无逻辑限制的赋值，因此需要将属性声明为私有的（private）</li>
+<li>以上针对属性就体现了封装性</li>
+</ul></li>
+<li>封装性的体现（不等同于封装性，只是封装性的一个体现）
+<ul>
+<li>我们将类的属性私有化（private），同时，提供公共（public）的方法来获取（getXxx）和设置（setXxx）此属性的值</li>
+</ul></li>
+<li>封装性的其他体现：① 如上3；②不对外暴露的私有方法；③ 单例模式；④ 如果不希望类在包外被调用，可将类设置为缺省的。</li>
+<li>封装性的体现，需要权限修饰符来配合
+<ul>
+<li>Java规定了4种权限修饰符（从小到大）：private、缺省、protected、public；四种范围：类内、同一个包内、不同包的字类内、同一工程内 <img src="/2021/11/25/Coding/Java/04%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E4%B8%8A/Chap4.7%20-%201.bmp" alt="4种权限修饰符"></li>
+<li>4种权限可以用来修饰类及类的内部结构：属性、方法、构造器、内部类
+<ul>
+<li><strong>修饰类的话：只能使用缺省、public</strong>【问题：public类可在同一工程中访问，那为什么不同包中重名的类可以同时存在。解答：因为权限修饰符只是表明可见性的大小，调用不同的类可以用包名去区别，public只是表明可以在工程中的任意位置调用，并不限制同名是否可以存在】</li>
+</ul></li>
+</ul></li>
+<li>总结封装性：Java提供了4种权限修饰符来修饰类及类的内部结构，体现类及类的内部结构在被调用时的可见性的大小</li>
+</ol>
+<h2 id="八类的成员之三构造器构造方法constructor">八、类的成员之三：构造器（构造方法，constructor）</h2>
+<ol type="1">
+<li>构造器的作用（只要造对象就要用构造器）
+<ul>
+<li>创建对象</li>
+<li>初始化对象的信息（属性或方法）</li>
+</ul></li>
+<li>构造器使用说明
+<ul>
+<li>如果没有显式的定义类的构造器的话，则系统默认提供一个空参的构造器（该构造器权限和类的权限是相同的）(一个类中一定有构造器)</li>
+<li>定义构造器的格式：权限修饰符 类名(形参列表) { }</li>
+<li>一个类中定义的多个构造器，彼此构成重载</li>
+<li><strong>一旦显式的定义了类的构造器，系统就不再提供默认的空参构造器</strong></li>
+<li>一个类中至少会有一个构造器</li>
+</ul></li>
+<li>构造器与方法有一定的区别：构造器是用来创建对象的；而方法是由对象进行调用的</li>
+<li>属性的赋值过程，赋值顺序为① - ② - ③ - ④，其中① - ② - ③是在对象实例出前执行，只执行一次，而④是可以重复多次执行的
+<ul>
+<li>① 默认初始化值</li>
+<li>② 显式初始化</li>
+<li>③ 构造器中初始化</li>
+<li>④ 通过“对象.属性”或“对象.方法”进行复制</li>
+</ul></li>
+</ol>
+<h2 id="扩展javabean">扩展：JavaBean</h2>
+<p>JavaBean是一种Java语言写成的可重用组件</p>
+<ol type="1">
+<li>定义：
+<ul>
+<li>所谓JavaBean是值符合如下标准的Java类：
+<ul>
+<li>类是公共的</li>
+<li>有一个无参的公共的构造器</li>
+<li>有属性，且有对应的set和get方法</li>
+</ul></li>
+</ul></li>
+</ol>
+<h2 id="扩展uml类图">扩展：UML类图</h2>
+<figure>
+<img src="/2021/11/25/Coding/Java/04%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E4%B8%8A/Chap4.8%20-%201.bmp" alt="UML类图"><figcaption aria-hidden="true">UML类图</figcaption>
+</figure>
+<h2 id="九关键字this">九、关键字：<span class="math inline">\(this\)</span></h2>
+<ul>
+<li>this的使用：可用来调用属性、方法、构造器
+<ul>
+<li>其中，this可理解为当前<strong>对象</strong>（针对方法） 或 当前正在创建的对象（针对构造器）
+<ul>
+<li>在类的方法中，可使用“this.属性”或“this.方法”的方式调用当前对象的属性或方法。但是，在通常情况下，我们都省略“this.”。在特殊情况下：例如方法或构造器的形参和类的属性同名时，我们必须显式的使用“this.属性”的方式表明此变量是属性，而非形参。</li>
+<li>在类的构造器中，可使用“this.属性”或“this.方法”的方式调用当前正在创建的对象的属性或方法。但是，在通常情况下，我们都省略“this.”。在特殊情况下：例如构造器的形参和类的属性同名时，我们必须显式的使用“this.属性”的方式表明此变量是属性，而非形参。</li>
+</ul></li>
+<li>this调用构造器的用法
+<ul>
+<li>在类的<strong>构造器中</strong>，可显式的使用“this(形参列表)”方式，调用本类中指定的其他构造器</li>
+<li>构造器中不能通过“this(形参列表)”的方式调用自己</li>
+<li>如果一个类中有n个构造器，则最多有n-1构造器中使用了“this(形参列表)”</li>
+<li>规定：“this(形参列表)”必须声明在当前构造器的首行</li>
+<li>构造器内部，最多只能声明一个“this(形参列表)”用来调用其他的构造器</li>
+</ul></li>
+</ul></li>
+</ul>
+<h2 id="十关键字packageimport">十、关键字：<span class="math inline">\(package\)</span>、<span class="math inline">\(import\)</span></h2>
+<ol type="1">
+<li>package关键字的使用
+<ul>
+<li>为了更好的实现项目中类的管理，提供了包的概念</li>
+<li>使用package声明类或接口所属的包，声明在源文件中的首行</li>
+<li>包属于标识符，遵循标识符的命名规则（见名知意）、规范（小写）</li>
+<li>每“.”一次，就代表一层文件目录</li>
+<li>补充：<strong>同一个包下，不可以命名同名的接口、类；不同包下可命名同名的接口或类</strong></li>
+<li>JDK中主要的包介绍 <img src="/2021/11/25/Coding/Java/04%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E4%B8%8A/Chap4.10%20-%201.bmp" alt="JDK中主要的包"></li>
+</ul></li>
+<li>MVC设计模式 <img src="/2021/11/25/Coding/Java/04%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E4%B8%8A/Chap4.10%20-%202.bmp" alt="MVC设计模式"></li>
+<li>import关键字的使用
+<ul>
+<li>在源文件中显式的使用import结构导入指定包下的类或接口</li>
+<li>声明位置：在源文件中的包声明和类声明之间</li>
+<li>如需导入多个结构，则并列写出即可；</li>
+<li>可使用xxx.*的方式导入xxx包下的所有结构（类或接口）</li>
+<li>如果使用的类或接口是java.lang包下的，则可省略import结构</li>
+<li>如果使用的类或接口是本包下的，则可省略import结构</li>
+<li>如果在源文件中，使用了不同包下的两个同名类，则必须至少有一个需要以全类名的方式（xxx.xxxx.xx.类名）调用</li>
+<li>使用“xxx.*”的方式可以调用xxx包下的所有结构，但如果使用的是xxx子包下的结构则仍需显式使用“xxx.子包”结构导入</li>
+<li>import static 可以导入指定类或接口<strong>中</strong>的静态结构（属性或方法）</li>
+</ul></li>
+</ol>
+<h2 id="每日一考构造器thispackageimport">每日一考（构造器、this、package、import）</h2>
+<ol type="1">
+<li>构造器的作用是什么？使用中有哪些注意点（&gt;= 3条）
+<ul>
+<li>作用：创建对象、初始化对象信息</li>
+<li>注意点：
+<ul>
+<li>当没有显式声明构造器时，类会提供了一个默认的无参构造器</li>
+<li>一个类中定义的多个构造器，彼此构成重载</li>
+<li><strong>一旦显式的定义了类的构造器，系统就不再提供默认的空参构造器</strong></li>
+</ul></li>
+</ul></li>
+<li>关于类的属性的赋值，有几种赋值的方式。谈谈赋值的先后顺序
+<ul>
+<li>① 默认值</li>
+<li>② 显式初始化</li>
+<li>③ 构造器初始化</li>
+<li>④ 通过<code>“对象.属性”</code>或<code>“对象.方法”</code>的方式赋值</li>
+<li>先后顺序是：① - ② - ③ - ④</li>
+</ul></li>
+<li>this关键字可用来调用那些结构，简单说明一下其使用
+<ul>
+<li>this可用来调用属性、方法、构造器</li>
+<li>this代表的是 当前使用的对象 或 正在创建的对象。使用“this.属性”或“this.方法”的方式调用正在使用对象中的属性或方法。使用“this(形参列表)”方式调用与其形参列表匹配的构造函数</li>
+</ul></li>
+<li>java中目前学习涉及到的四种权限修饰符都有什么？并说明各自的权限范围
+<ul>
+<li>private、缺省、protected、public</li>
+<li>private仅能在同一个类中可见</li>
+<li>缺省仅能在同一个类或同一包下可见</li>
+<li>protected仅能在同一个类、同一包、不同包下的子类中可见</li>
+<li>public可在同一个类、同一包、不同包下的子类、同一工程中可见</li>
+</ul></li>
+</ol>
+<h1 id="接下来是项目二">接下来是：项目二</h1>
+]]></content>
+      <categories>
+        <category>程序设计</category>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>笔记</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>第三章 Java数组</title>
     <url>/2021/11/25/Coding/Java/03Java%E6%95%B0%E7%BB%84/</url>
     <content><![CDATA[<h1 id="第3章-数组">第3章 数组</h1>
