@@ -18,6 +18,7 @@
 <li>每日一考</li>
 <li>声明抽象类，并包含抽象方法，测试类中创建一个继承抽象类的匿名子类对象</li>
 </ol>
+<span id="more"></span>
 <h2 id="一关键字static">一、关键字：static</h2>
 <ol type="1">
 <li>static：静态的</li>
