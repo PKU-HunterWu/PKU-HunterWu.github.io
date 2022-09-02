@@ -1,6 +1,189 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>第7章 异常处理</title>
+    <url>/2022/09/02/Coding/Java/07%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/</url>
+    <content><![CDATA[<h1 id="第7章异常处理">第7章、异常处理</h1>
+<h2 id="目录">目录</h2>
+<ol type="1">
+<li>一、异常概述与异常体系结构</li>
+<li>二、常见异常</li>
+<li>三、异常处理机制一：try - catch - finally (重点)</li>
+<li>四、异常处理机制二：throws (重点)</li>
+<li>五、手动抛出异常：throw</li>
+<li>六、用户自定义异常类</li>
+<li>面试题</li>
+</ol>
+<span id="more"></span>
+<h2 id="一异常概述与异常体系结构">一、异常概述与异常体系结构</h2>
+<h3 id="异常概述">异常概述</h3>
+<p>异常：在Java语言中，将程序执行中发生的不正常情况称为“异常”。(开发过程中的语法错误和逻辑错误不是异常)</p>
+<p>Java程序在执行过程中所发生的异常事件可分为两类（广义异常）：</p>
+<ul>
+<li>Error：Java虚拟机无法解决的严重问题。如：JVM系统内部错误、资源耗尽等严重情况。比如：java.lang.StackOverflowError（栈溢出）和java.lang.OutOfMemoryError（堆溢出，OOM）。一般不编写针对性的代码进行处理。</li>
+<li>Exception（狭义异常）: 其它因编程错误或偶然的外在因素导致的一般性问题，可以使用针对性的代码进行处理。例如：
+<ul>
+<li>空指针访问</li>
+<li>试图读取不存在的文件</li>
+<li>网络连接中断</li>
+<li>数组角标越界</li>
+</ul></li>
+</ul>
+<ol type="1">
+<li>对于这些错误，一般有两种解决方法：一是遇到错误就终止程序的运行。另一种方法是由程序员在编写程序时，就考虑到错误的检测、错误消息的提示，以及错误的处理。</li>
+</ol>
+<h3 id="异常体系结构">异常体系结构</h3>
+<ul>
+<li>java.lang.Throwable
+<ul>
+<li>java.lang.Error</li>
+<li>java.lang.Exception
+<ul>
+<li>编译时异常（受检异常，checked）
+<ul>
+<li>IOException
+<ul>
+<li>FileNotFoundException</li>
+</ul></li>
+<li>ClassNotFoundException</li>
+<li>...</li>
+</ul></li>
+<li>运行时异常（非受检异常，unchecked）java.lang.RuntimeException
+<ul>
+<li>NullPointerException</li>
+<li>ArrayIndexOutOfBoundsException</li>
+<li>ClassCastException</li>
+<li>NumberFormatException</li>
+<li>InputMismatchException</li>
+<li>ArithmeticException</li>
+<li>...</li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+<h2 id="二常见异常">二、常见异常</h2>
+<ul>
+<li>java.lang.RuntimeException
+<ul>
+<li>ClassCastException</li>
+<li>ArrayIndexOutOfBoundsException</li>
+<li>NullPointerException</li>
+<li>ArithmeticException</li>
+<li>NumberFormatException</li>
+<li>InputMismatchException</li>
+<li>。。。</li>
+</ul></li>
+<li>java.io.IOExeption
+<ul>
+<li>FileNotFoundException</li>
+<li>EOFException</li>
+</ul></li>
+<li>java.lang.ClassNotFoundException</li>
+<li>java.lang.InterruptedException</li>
+<li>java.io.FileNotFoundException</li>
+<li>java.sql.SQLException</li>
+</ul>
+<h2 id="三异常处理机制一try---catch---finally重点">三、异常处理机制一：try - catch - finally(重点)</h2>
+<h3 id="异常处理抓抛模型">异常处理：抓抛模型</h3>
+<p>过程一：抛，程序在正常执行过程中，一旦出现异常，就会在异常代码处生成一个对应异常类的对象，并将此对象抛出。一旦抛出对象后，其后的代码就不再执行</p>
+<p>过程二：抓，理解为异常处理方式：①try - catch - finally</p>
+<h3 id="try-catch-finally的使用">try-catch-finally的使用</h3>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line">    <span class="comment">// 可能出现异常的代码</span></span><br><span class="line">&#125; <span class="keyword">catch</span>(异常类型<span class="number">1</span> 变量名<span class="number">1</span>)&#123;</span><br><span class="line">    <span class="comment">// 处理异常类型1的处理方式方式1</span></span><br><span class="line">&#125; <span class="keyword">catch</span>(异常类型<span class="number">2</span> 变量名<span class="number">2</span>)&#123;</span><br><span class="line">    <span class="comment">// 处理异常类型2的处理方式方式2</span></span><br><span class="line">&#125; <span class="keyword">catch</span>(异常类型<span class="number">3</span> 变量名<span class="number">3</span>)&#123;</span><br><span class="line">    <span class="comment">// 处理异常类型3的处理方式方式3</span></span><br><span class="line">&#125; </span><br><span class="line">...</span><br><span class="line"><span class="keyword">finally</span>&#123;</span><br><span class="line">    <span class="comment">// 一定会执行的代码</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>说明：
+<ul>
+<li>finally是可选的</li>
+<li>使用try将可能出现异常的代码包装起来，执行过程中一旦出现异常，就会生成一个异常类的对象，根据此对象的类型，去catch中进行匹配</li>
+<li>一旦try中的异常对象匹配到某个catch条件时，就进入catch中进行异常处理，一旦处理完成，就跳出当前的try-catch结构（无finally的情况），继续执行其后的代码</li>
+<li>catch中的异常类型，如无子父类关系，谁声明在上、下无所谓；catch中的异常类型如满足子父类关系，则要求子类的catch语句声明在父类的catch语句上面，否则报错</li>
+<li>常用的异常对象处理方式：①String getMessage(); ②printStackTrace();</li>
+<li>try结构中声明的变量，出了try结构后就不能被调用了</li>
+<li>try-catch-finally结构可以嵌套</li>
+</ul></li>
+<li>体会
+<ul>
+<li>使用try-catch-finally处理编译时异常，会使得程序在编译时不在报错，但在运行时可能会报错。相当于使用try-catch-finally结构将一个编译时可能出现的异常，延迟到运行时出现</li>
+<li>开发中，由于运行时异常比较常见，所以通常不针对运行时异常编写try-catch-finally了。但针对编译时异常，一定要考虑异常处理（处理编译时异常使得可能出现的异常延迟，起码生成字节码文件）</li>
+</ul></li>
+</ul>
+<h3 id="try-catch-finally中finally的使用">try-catch-finally中finally的使用</h3>
+<ol type="1">
+<li>finally是可选的</li>
+<li>finally中声明的是一定会被执行的代码，即使catch中又出现异常、try中有return语句（被执行）、catch中有return语句（被执行）等情况。【如try、catch、finally中都有return语句，则最终返回的是finally中的return语句】</li>
+<li>像数据库连接、输入输出流、网络编程Socket等资源，JVM是不能自动回收的，我们需要手动进行资源的释放，此时的资源释放代码<strong>需要声明在finally中</strong></li>
+<li>右键 - surround with - try/catch block</li>
+</ol>
+<h2 id="四异常处理机制二throws重点">四、异常处理机制二：throws(重点)</h2>
+<ol type="1">
+<li>“throws + 异常类型” 卸载方法的声明处，指明此方法执行时可能会抛出的异常类型。一旦方法体执行时出现异常，仍会在异常代码处生成一个异常类的对象，此对象满足throws后的异常类型时就会被抛出（抛给调用者），异常代码后的代码就不再执行</li>
+<li>体会：
+<ul>
+<li>try-catch-finally：真正的把异常处理掉了</li>
+<li>throws的方式只是将异常抛给了方法的调用者，并没有真正的将异常处理掉</li>
+</ul></li>
+<li>开发中如何选择try-catch-finally，还是使用throws
+<ul>
+<li>如父类中被重写方法没有throws处理异常，则子类重写的方法也不能使用throws方式处理异常，意味着如果子类重写的方法中有可能出现异常，必须使用try-catch-finally方式处理异常</li>
+<li>执行的方法a中，先后又调用了另外几个方法时，且这几个方法是递进关系执行的（下一个方法的执行依赖于上一个方法的正确结果），那么建议这几个方法使用throws方式进行处理，而执行的方法a可以考虑使用try-catch-finally方式进行处理</li>
+</ul></li>
+</ol>
+<h3 id="方法重写的规则子类重写的方法抛出的异常类型不大于父类被重写的方法抛出的异常类型">方法重写的规则：子类重写的方法抛出的异常类型不大于父类被重写的方法抛出的异常类型</h3>
+<p>重写的方法，在编译时看的父类被重写方法，因此在编译阶段认为：方法抛出异常后调用者处理的是父类中被重写方法的异常类型，然而由于多态性，运行时运行的是子类重写的方法，因此如果子类重写的方法抛出的异常类型大于父类被重写的方法抛出的异常，调用者处理异常的方法失效，编译报错</p>
+<h2 id="五手动抛出异常throw">五、手动抛出异常：throw</h2>
+<p>程序执行中，除了自动抛出异常对象的情况外，还可手动的throw一个异常类的对象</p>
+<p>异常对象的产生：①系统自动生成的异常对象；②手动的生成一个异常对象，并抛出（throw）</p>
+<h2 id="六用户自定义异常类">六、用户自定义异常类</h2>
+<p>如何自定义异常类</p>
+<ol type="1">
+<li>继承于现有的异常结构：RuntimeException、Exception</li>
+<li>提供全局常量serialVersionUID</li>
+<li>提供重载的构造器</li>
+</ol>
+<h2 id="面试题">面试题</h2>
+<ol type="1">
+<li>常见的异常都有哪些？举例说明</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">//******************以下是编译时异常***************************</span></span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test7</span><span class="params">()</span></span>&#123;</span><br><span class="line"><span class="comment">//		File file = new File(&quot;hello.txt&quot;);</span></span><br><span class="line"><span class="comment">//		FileInputStream fis = new FileInputStream(file);</span></span><br><span class="line"><span class="comment">//		</span></span><br><span class="line"><span class="comment">//		int data = fis.read();</span></span><br><span class="line"><span class="comment">//		while(data != -1)&#123;</span></span><br><span class="line"><span class="comment">//			System.out.print((char)data);</span></span><br><span class="line"><span class="comment">//			data = fis.read();</span></span><br><span class="line"><span class="comment">//		&#125;</span></span><br><span class="line"><span class="comment">//		</span></span><br><span class="line"><span class="comment">//		fis.close();</span></span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//******************以下是运行时异常***************************</span></span><br><span class="line">	<span class="comment">//ArithmeticException</span></span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test6</span><span class="params">()</span></span>&#123;</span><br><span class="line">		<span class="keyword">int</span> a = <span class="number">10</span>;</span><br><span class="line">		<span class="keyword">int</span> b = <span class="number">0</span>;</span><br><span class="line">		System.out.println(a / b);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//InputMismatchException</span></span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test5</span><span class="params">()</span></span>&#123;</span><br><span class="line">		Scanner scanner = <span class="keyword">new</span> Scanner(System.in);</span><br><span class="line">		<span class="keyword">int</span> score = scanner.nextInt();</span><br><span class="line">		System.out.println(score);</span><br><span class="line">		</span><br><span class="line">		scanner.close();</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//NumberFormatException</span></span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test4</span><span class="params">()</span></span>&#123;</span><br><span class="line">		</span><br><span class="line">		String str = <span class="string">&quot;123&quot;</span>;</span><br><span class="line">		str = <span class="string">&quot;abc&quot;</span>;</span><br><span class="line">		<span class="keyword">int</span> num = Integer.parseInt(str);</span><br><span class="line">		</span><br><span class="line">		</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//ClassCastException</span></span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test3</span><span class="params">()</span></span>&#123;</span><br><span class="line">		Object obj = <span class="keyword">new</span> Date();</span><br><span class="line">		String str = (String)obj;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//IndexOutOfBoundsException</span></span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test2</span><span class="params">()</span></span>&#123;</span><br><span class="line">		<span class="comment">//ArrayIndexOutOfBoundsException</span></span><br><span class="line"><span class="comment">//		int[] arr = new int[10];</span></span><br><span class="line"><span class="comment">//		System.out.println(arr[10]);</span></span><br><span class="line">		<span class="comment">//StringIndexOutOfBoundsException</span></span><br><span class="line">		String str = <span class="string">&quot;abc&quot;</span>;</span><br><span class="line">		System.out.println(str.charAt(<span class="number">3</span>));</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//NullPointerException</span></span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test1</span><span class="params">()</span></span>&#123;</span><br><span class="line">		</span><br><span class="line"><span class="comment">//		int[] arr = null;</span></span><br><span class="line"><span class="comment">//		System.out.println(arr[3]);</span></span><br><span class="line">		</span><br><span class="line">		String str = <span class="string">&quot;abc&quot;</span>;</span><br><span class="line">		str = <span class="keyword">null</span>;</span><br><span class="line">		System.out.println(str.charAt(<span class="number">0</span>));</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<ol start="2" type="1">
+<li>throw和throws有什么区别？
+<ul>
+<li>throws为一种异常处理方式
+<ul>
+<li>属于异常处理的一种方式，声明在方法的声明处</li>
+</ul></li>
+<li>throw为手动抛出异常对象
+<ul>
+<li>表示抛出一个异常类的对象，生成异常类对象的过程。声明在方法体内</li>
+</ul></li>
+</ul></li>
+<li>final、finally、finalize三者区别（
+<ul>
+<li>结构相似的
+<ul>
+<li>Collection和Collections，</li>
+<li>String、StringBuffer、StringBuilder，</li>
+<li>ArrayList、LinkedList，</li>
+<li>HashMap、LinkedHashMap，</li>
+<li>重写、重载</li>
+</ul></li>
+<li>结构不相似的
+<ul>
+<li>抽象类、接口</li>
+<li>==、equals()</li>
+<li>sleep()、wait()</li>
+</ul></li>
+</ul></li>
+</ol>
+]]></content>
+      <categories>
+        <category>程序设计</category>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>笔记</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>第6章 面向对象编程-下</title>
     <url>/2022/09/02/Coding/Java/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%BC%96%E7%A8%8B%E4%B8%8B/</url>
     <content><![CDATA[<h1 id="第6章面向对象编程-下">第6章、面向对象编程-下</h1>
@@ -387,7 +570,18 @@
     <url>/2022/01/11/Coding/Java/05%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%BC%96%E7%A8%8B%E4%B8%AD/</url>
     <content><![CDATA[<h1 id="第5章面向对象编程-中">第5章、面向对象编程-中</h1>
 <h2 id="目录">目录</h2>
-<p>​ 一、面向对象的特征之二：继承性<br> ​ 二、方法的重写（override /overwrite）<br> ​ 三、super 关键字<br> ​ 四、子类对象实例化的全过程<br> ​ 五、面向对象特征之三：多态性（重难点）<br> ​ 六、Object 类的使用<br> ​ 七、包装类的使用<br> ​ 面试题<br> ​ 每日一考<br></p>
+<ol type="1">
+<li>目录</li>
+<li>一、面向对象的特征之二：继承性</li>
+<li>二、方法的重写（override /overwrite）</li>
+<li>三、super 关键字</li>
+<li>四、子类对象实例化的全过程</li>
+<li>五、面向对象特征之三：多态性（重难点）</li>
+<li>六、Object 类的使用</li>
+<li>七、包装类的使用</li>
+<li>面试题</li>
+<li>每日一考</li>
+</ol>
 <span id="more"></span>
 <h2 id="一面向对象的特征之二继承性">一、面向对象的特征之二：继承性</h2>
 <ol type="1">
