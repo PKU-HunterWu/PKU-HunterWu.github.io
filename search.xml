@@ -1,6 +1,898 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>第9章 java常用类</title>
+    <url>/2022/09/02/Coding/Java/09Java%E5%B8%B8%E7%94%A8%E7%B1%BB/</url>
+    <content><![CDATA[<h1 id="第9章java常用类">第9章、java常用类</h1>
+<h2 id="目录">目录</h2>
+<ol type="1">
+<li>一、字符串相关类（String 类、StringBuffer、StringBuilder）【面试常考】</li>
+<li>二、JDK 8 之前的日期时间 API（System 静态方法、Date 类，Calendar 类、SimpleDateFormat 类）</li>
+<li>三、JDK 8 中新日期时间 API（LocalDate、LocalTime、LocalDateTime、Instant、DateTimeFormatter、其他类）</li>
+<li>四、Java 比较器（Comparable 接口、Comparator 接口）(重点)</li>
+<li>五、System 类</li>
+<li>六、Math 类</li>
+<li>七、BigInteger 与 BigDecimal</li>
+<li>面试</li>
+<li>每日一考</li>
+</ol>
+<span id="more"></span>
+<h2 id="一字符串相关类string类stringbufferstringbuilder面试常考">一、字符串相关类（String类、StringBuffer、StringBuilder）【面试常考】</h2>
+<h3 id="string字符串使用一对引起来表示">String：字符串，使用一对“”引起来表示</h3>
+<ol type="1">
+<li>String是声明为final的，不可被继承</li>
+<li>String类实现了Serializable接口：表示字符串是支持序列化的（可通过网络传输IO流）</li>
+<li>String类实现了Comparable接口：表示String对象可比较大小</li>
+<li>String类内部定义了<strong>final</strong> char[] value用于存储字符串数据（不可更改数组大小、内容）</li>
+<li>String：代表不可变的字符序列，<strong>不可变 性</strong>
+<ul>
+<li><strong>不可变性体现1</strong>：当对字符串重新赋值时，需要重新指定内存区域赋值，不能使用原有的value赋值（在常量池中重新分配内存区域并将地址赋给引用）</li>
+<li><strong>不可变性体现2</strong>：对现有字符串进行连接操作时，也需要重新指定内存区域赋值，不能使用原有的value赋值</li>
+<li><strong>不可变性体现3</strong>：当调用String的replace()方法修改指定字符或字符串时，也需要重新指定内存区域赋值，不能使用原有的value赋值</li>
+</ul></li>
+</ol>
+<h4 id="string对象的内存结构">String对象的内存结构</h4>
+<ol type="1">
+<li>String实例化方式：
+<ul>
+<li>通过字面量定义的方式：此时的字符串引用的数据声明在方法区中的字符串常量池中
+<ul>
+<li>不用new的赋值，为<strong>字面量的定义方式</strong>。String str = "str";</li>
+<li>通过字面量的方式给字符串赋值，此时的字符串值声明在字符串常量池中。</li>
+<li>字符串常量池中不会存储相同内容的字符串（相同的字符串内容的引用都指向同一地址）</li>
+</ul></li>
+<li>通过new+构造器的方式：此时字符串引用保存的地址值时数据在堆空间中开辟空间后对应的地址值。但堆空间中的char[]数组所指向的地址仍指向字符串常量池，且若在常量池中已经存在传入构造器的字符串内容时，char[]数组指向的地址也是该常量池已存在的字符串地址</li>
+</ul></li>
+</ol>
+<figure>
+<img src="/2022/09/02/Coding/Java/09Java%E5%B8%B8%E7%94%A8%E7%B1%BB/70%20Day%20-%2002.png" alt="new 构造器"><figcaption aria-hidden="true">new 构造器</figcaption>
+</figure>
+<ol start="2" type="1">
+<li>结论（面笔试常考）
+<ul>
+<li><p>常量（字面量）与常量（字面量）的拼接结果在常量池。且常量池中不会存在相同内容的常量。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">String str = <span class="string">&quot;strok&quot;</span>;</span><br><span class="line"><span class="keyword">final</span> String s = <span class="string">&quot;str&quot;</span>; <span class="comment">// 仍然是常量</span></span><br><span class="line">String s1 = s + <span class="string">&quot;ok&quot;</span>;</span><br><span class="line">sysout(s1 == str) <span class="comment">// true，加了final就是常量，常量和常量拼接仍在常量池</span></span><br></pre></td></tr></table></figure></li>
+<li><p>只要其中有一个是变量，结果就在堆中</p></li>
+<li><p>如果字符串拼接的结果调用intern()方法，返回值就在常量池中</p></li>
+</ul></li>
+</ol>
+<p>面试题</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StringTest</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> String str = <span class="keyword">new</span> String(<span class="string">&quot;good&quot;</span>);</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">char</span>[] ch = &#123;<span class="string">&#x27;t&#x27;</span>, <span class="string">&#x27;e&#x27;</span>, <span class="string">&#x27;s&#x27;</span>, <span class="string">&#x27;t&#x27;</span>&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">change</span><span class="params">(String str, <span class="keyword">char</span>[] ch)</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;change, str == this.str: &quot;</span> + str == <span class="keyword">this</span>.str); </span><br><span class="line">        <span class="comment">// true：说明传入的是地址</span></span><br><span class="line">        str = <span class="string">&quot;test ok&quot;</span>;</span><br><span class="line"><span class="comment">//        str = new String(&quot;test ok&quot;);</span></span><br><span class="line">        System.out.println(<span class="string">&quot;change, str == this.str: &quot;</span> + str == <span class="keyword">this</span>.str);</span><br><span class="line">        <span class="comment">// false：说明函数内的str丢掉了类中的str属性地址，</span></span><br><span class="line">        <span class="comment">// 而字面量和new等都给str引用重新赋了新的地址值</span></span><br><span class="line">        </span><br><span class="line">        ch[<span class="number">0</span>] = <span class="string">&#x27;b&#x27;</span>;</span><br><span class="line">        System.out.println(<span class="string">&quot;change: &quot;</span> + <span class="keyword">this</span>.str);</span><br><span class="line">        System.out.println(<span class="string">&quot;change: &quot;</span> + <span class="keyword">this</span>.ch);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        StringTest stringTest = <span class="keyword">new</span> StringTest();</span><br><span class="line">        stringTest.change(stringTest.str, stringTest.ch);</span><br><span class="line">        System.out.println(<span class="string">&quot;main: &quot;</span> + stringTest.str);</span><br><span class="line">        System.out.println(<span class="string">&quot;main: &quot;</span> + stringTest.ch);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>方法的值传递机制中，当实参和形参都是引用类型变量时，传递的值确实是地址值，因为实参是栈中保存的值即对象在堆中的地址值，但需要澄清的一点是：方法中形参拿到该值后可以通过该值找到对象并修改对象中的属性值（类似数组传递后可更改数组中存储的值），但是方法内的形参不会影响实参的值，也就是说形参的值改变（意味着形参存储的地址值改变）时，实参仍是指向原来的地址的。</p>
+<p>上面代码中的change方法中，对形参str又重新赋值，即形参改的是地址值，并没有改变实参所指向地址堆空间中的属性值。就像传入数组地址一样，你在方法内通过形参去索引数组的某个元素并修改他是可以影响到外面的，因为外面的数组指向的也是这个堆空间，但是这种方式并没有影响实参数组的指向地址，当你在方法内把形参数组重新赋值时改的也只是形参指向的地址，并不会改变实参指向的地址。</p>
+<p>总结：实参只是传递给形参一个值的副本或值的copy，无论如何，形参的操作无法影响实参的存储数据（是栈中保存的数据，而不是堆中的数据，只要知道存储在堆中对象的地址就能通过调用修改对象中的属性）</p>
+<p>【初级参数传递见 第四章 - 六、再谈方法】</p>
+<h4 id="string常用方法">String常用方法</h4>
+<ol type="1">
+<li>常用方法1</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">length</span><span class="params">()</span>：返回字符串的长度： return value.length</span></span><br><span class="line"><span class="function"><span class="keyword">char</span> <span class="title">charAt</span><span class="params">(<span class="keyword">int</span> index)</span>： 返回某索引处的字符return value[index]</span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">isEmpty</span><span class="params">()</span>：判断是否是空字符串：return value.length </span>== <span class="number">0</span></span><br><span class="line"><span class="function">String <span class="title">toLowerCase</span><span class="params">()</span>：使用默认语言环境，将 String 中的所有字符转换为小写</span></span><br><span class="line"><span class="function">String <span class="title">toUpperCase</span><span class="params">()</span>：使用默认语言环境，将 String 中的所有字符转换为大写</span></span><br><span class="line"><span class="function">String <span class="title">trim</span><span class="params">()</span>：返回字符串的副本，忽略前导空白和尾部空白</span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object obj)</span>：比较字符串的内容是否相同</span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">equalsIgnoreCase</span><span class="params">(String anotherString)</span>：与equals方法类似，忽略大小写</span></span><br><span class="line"><span class="function">String <span class="title">concat</span><span class="params">(String str)</span>：将指定字符串连接到此字符串的结尾。 等价于用“+”</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">compareTo</span><span class="params">(String anotherString)</span>：比较两个字符串的大小</span></span><br><span class="line"><span class="function">String <span class="title">substring</span><span class="params">(<span class="keyword">int</span> beginIndex)</span>：返回一个新的字符串，它是此字符串的从beginIndex开始截取到最后的一个子字符串。</span></span><br><span class="line"><span class="function">String <span class="title">substring</span><span class="params">(<span class="keyword">int</span> beginIndex, <span class="keyword">int</span> endIndex)</span> ：返回一个新字符串，它是此字符串从beginIndex开始截取到<span class="title">endIndex</span><span class="params">(不包含)</span>的一个子字符串。</span></span><br></pre></td></tr></table></figure>
+<ol start="2" type="1">
+<li>常用方法2</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">endsWith</span><span class="params">(String suffix)</span>：测试此字符串是否以指定的后缀结束</span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">startsWith</span><span class="params">(String prefix)</span>：测试此字符串是否以指定的前缀开始</span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">startsWith</span><span class="params">(String prefix, <span class="keyword">int</span> toffset)</span>：测试此字符串从指定索引开始的子字符串是否以指定前缀开始</span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">contains</span><span class="params">(CharSequence s)</span>：当且仅当此字符串包含指定的 <span class="keyword">char</span> 值序列时，返回 <span class="keyword">true</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">indexOf</span><span class="params">(String str)</span>：返回指定子字符串在此字符串中第一次出现处的索引</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">indexOf</span><span class="params">(String str, <span class="keyword">int</span> fromIndex)</span>：返回指定子字符串在此字符串中第一次出现处的索引，从指定的索引开始</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">lastIndexOf</span><span class="params">(String str)</span>：返回指定子字符串在此字符串中最右边出现处的索引</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">lastIndexOf</span><span class="params">(String str, <span class="keyword">int</span> fromIndex)</span>：返回指定子字符串在此字符串中最后一次出现处的索引，从指定的索引开始反向搜索</span></span><br></pre></td></tr></table></figure>
+<ol start="3" type="1">
+<li>常用方法3</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function">String <span class="title">replace</span><span class="params">(<span class="keyword">char</span> oldChar, <span class="keyword">char</span> newChar)</span>：返回一个新的字符串，它是通过用newChar 替换此字符串中出现的所有oldChar 得到的。</span></span><br><span class="line"><span class="function">String <span class="title">replace</span><span class="params">(CharSequence target, CharSequence replacement)</span>：使用指定的字面值替换序列替换此字符串所有匹配字面值目标序列的子字符串。</span></span><br><span class="line"><span class="function">String <span class="title">replaceAll</span><span class="params">(String regex, String replacement)</span> ： 使用 给 定 的replacement 替换此字符串所有匹配给定的正则表达式的子字符串。</span></span><br><span class="line"><span class="function">String <span class="title">replaceFirst</span><span class="params">(String regex, String replacement)</span> ：使用给定的replacement 替换此字符串匹配给定的正则表达式的第一个子字符串。</span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">matches</span><span class="params">(String regex)</span>：告知此字符串是否匹配给定的正则表达式。</span></span><br><span class="line"><span class="function">String[] <span class="title">split</span><span class="params">(String regex)</span>：根据给定正则表达式的匹配拆分此字符串。</span></span><br><span class="line"><span class="function">String[] <span class="title">split</span><span class="params">(String regex, <span class="keyword">int</span> limit)</span>：根据匹配给定的正则表达式来拆分此字符串，最多不超过limit个，如果超过了，剩下的全部都放到最后一个元素中</span></span><br></pre></td></tr></table></figure>
+<h4 id="string和基本数据类型转换">String和基本数据类型转换</h4>
+<ol type="1">
+<li><p>String --&gt; 基本数据类型、包装类</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">包装类.parseXxx(str);</span><br></pre></td></tr></table></figure></li>
+<li><p>基本数据类型、包装类 --&gt; String</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">String.valueOf(xxx);</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h4 id="string与字符数组转换">String与字符数组转换</h4>
+<ol type="1">
+<li><p>String --&gt; char[]</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">String对象.toCharArray();</span><br><span class="line"></span><br><span class="line"><span class="comment">//提供了将指定索引范围内的字符串存放到数组中的方法。</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">getChars</span><span class="params">(<span class="keyword">int</span> srcBegin, <span class="keyword">int</span> srcEnd, <span class="keyword">char</span>[] dst,<span class="keyword">int</span> dstBegin)</span></span></span><br></pre></td></tr></table></figure></li>
+<li><p>char[] --&gt; String</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// String 类的构造器：</span></span><br><span class="line">String(<span class="keyword">char</span>[]);</span><br><span class="line">String(<span class="keyword">char</span>[]，<span class="keyword">int</span> offset，<span class="keyword">int</span> length); </span><br></pre></td></tr></table></figure></li>
+</ol>
+<h4 id="string与字节数组转换">String与字节数组转换</h4>
+<ol type="1">
+<li><p>String --&gt; byte[]：编码</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">//使用平台的默认字符集将此 String 编码为byte 序列，并将结果存储到一个新的 byte 数组中。</span></span><br><span class="line"><span class="keyword">byte</span>[] bytes = String对象.getBytes(); <span class="comment">// 使用默认字符集进行转换</span></span><br><span class="line">sysout(Arrays.toString(bytes));</span><br><span class="line"></span><br><span class="line"><span class="comment">//使用指定的字符集将此 String 编码到 byte 序列，并将结果存储到新的 byte 数组</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">byte</span>[] getBytes(String charsetName) </span><br><span class="line"></span><br><span class="line"><span class="keyword">byte</span>[] bytes = String对象.getBytes(<span class="string">&quot;gbk&quot;</span>); <span class="comment">// 使用gbk字符集进行编码</span></span><br><span class="line">sysout(Arrays.toString(bytes));</span><br></pre></td></tr></table></figure></li>
+<li><p>byte[] --&gt; String：解码</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 通过使用平台的默认字符集解码指定的 byte 数组，构造一个新的 String。</span></span><br><span class="line">String(<span class="keyword">byte</span>[]); <span class="comment">// 使用默认字符集进行解码</span></span><br><span class="line">String(<span class="keyword">byte</span>[], <span class="string">&quot;gbk&quot;</span>); <span class="comment">// 使用gbk字符集进行解码</span></span><br><span class="line"><span class="comment">// 解码时要求解码使用的字符集必须与编码时使用的字符集一致</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 用指定的字节数组的一部分，即从数组起始位置offset开始取length个字节构造一个字符串对象</span></span><br><span class="line">String(<span class="keyword">byte</span>[]，<span class="keyword">int</span> offset，<span class="keyword">int</span> length) </span><br></pre></td></tr></table></figure></li>
+</ol>
+<h4 id="string常见算法">String常见算法</h4>
+<ol type="1">
+<li><p>模拟一个trim方法，去除字符串两端的空格。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TrimAlike</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        String str = <span class="string">&quot; 1 &quot;</span>;</span><br><span class="line">        String str1 = str.trim();</span><br><span class="line">        System.out.println(str1);</span><br><span class="line">        String str2 = Trim(str);</span><br><span class="line">        System.out.println(str2);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">Trim</span><span class="params">(String str)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">char</span>[] ch = str.toCharArray();</span><br><span class="line">        <span class="keyword">int</span> start = -<span class="number">1</span>;</span><br><span class="line">        <span class="keyword">int</span> end = str.length();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; str.length(); i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (ch[i] != <span class="string">&#x27; &#x27;</span>) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            start = i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = str.length() - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">            <span class="keyword">if</span> (ch[i] != <span class="string">&#x27; &#x27;</span>) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            end = i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(start &lt; end)</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> String(ch, start + <span class="number">1</span>, end - start - <span class="number">1</span>);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>将一个字符串进行反转。将字符串中指定部分进行反转。比如“abcdefg”反转为”abfedcg”</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ReverseString</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        String str = <span class="string">&quot;abcdefg&quot;</span>;</span><br><span class="line">        <span class="keyword">int</span> start = <span class="number">2</span>;</span><br><span class="line">        <span class="keyword">int</span> end = <span class="number">5</span>;</span><br><span class="line">        String str1 = reverseString(str, start, end);</span><br><span class="line">        System.out.println(str1);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">reverseString</span><span class="params">(String str, <span class="keyword">int</span> start, <span class="keyword">int</span> end)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (str != <span class="keyword">null</span> &amp;&amp; start &lt; end &amp;&amp; str.length() - <span class="number">1</span> &gt; end &amp;&amp; start &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">char</span>[] chars = str.toCharArray();</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; (end - start) / <span class="number">2</span>; i++) &#123;</span><br><span class="line">                <span class="keyword">char</span> tmp = chars[start + i];</span><br><span class="line">                chars[start + i] = chars[end - i];</span><br><span class="line">                chars[end - i] = tmp;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> String(chars);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 基于数组的操作</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">reverseString2</span><span class="params">(String str, <span class="keyword">int</span> start, <span class="keyword">int</span> end)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (str != <span class="keyword">null</span> &amp;&amp; start &lt; end &amp;&amp; str.length() - <span class="number">1</span> &gt; end &amp;&amp; start &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">char</span>[] chars = str.toCharArray();</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> x = start, y = end; x &lt; y; x++, y--) &#123;</span><br><span class="line">                <span class="keyword">char</span> tmp = chars[x];</span><br><span class="line">                chars[x] = chars[y];</span><br><span class="line">                chars[y] = tmp;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> String(chars);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 使用String的拼接</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">reverseString3</span><span class="params">(String str, <span class="keyword">int</span> start, <span class="keyword">int</span> end)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (str != <span class="keyword">null</span> &amp;&amp; start &lt; end &amp;&amp; str.length() - <span class="number">1</span> &gt; end &amp;&amp; start &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">            String reverseStr = str.substring(<span class="number">0</span>, start);</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = end; i &gt;= start; i--) &#123;</span><br><span class="line">                reverseStr += str.charAt(i);</span><br><span class="line">            &#125;</span><br><span class="line">            reverseStr += str.substring(end + <span class="number">1</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> reverseStr;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 使用StringBuffer | StringBuilder</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">reverseString4</span><span class="params">(String str, <span class="keyword">int</span> start, <span class="keyword">int</span> end)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (str != <span class="keyword">null</span> &amp;&amp; start &lt; end &amp;&amp; str.length() - <span class="number">1</span> &gt; end &amp;&amp; start &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">            StringBuilder stringBuilder = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">            stringBuilder.append(str, <span class="number">0</span>, start);</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = end; i &gt;= start; i--) &#123;</span><br><span class="line">                stringBuilder.append(str.charAt(i));</span><br><span class="line">            &#125;</span><br><span class="line">            stringBuilder.append(str.substring(end + <span class="number">1</span>))</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> stringBuilder.toString();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li><p>获取一个字符串在另一个字符串中出现的次数。比如：获取“ ab”在 “abkkcadkabkebfkabkskab” 中出现的次数</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CountString</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        String str1 = <span class="string">&quot;ab&quot;</span>;</span><br><span class="line">        String str2 = <span class="string">&quot;abkkcadkabkebfkabkskab&quot;</span>;</span><br><span class="line">        System.out.println(countString(str1, str2));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 计算str1在str2中出现次数</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> str1</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> str2</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">countString</span><span class="params">(String str1, String str2)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> cnt = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(str1.length() &gt; str2.length())&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span>(str1.length() == str2.length())&#123;</span><br><span class="line">            <span class="keyword">if</span>(str1.compareTo(str2) != <span class="number">0</span>)&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; str2.length();i++;)&#123;</span><br><span class="line">                i = str2.indexOf(str1, i);</span><br><span class="line">                System.out.println(<span class="string">&quot;index: &quot;</span> + i);</span><br><span class="line">                <span class="keyword">if</span>(i == -<span class="number">1</span>)</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                cnt++;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> cnt;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li><p>获取两个字符串中最大相同子串。比如： str1 = "abcwerthelloyuiodef“;str2 = "cvhellobnm" 提示：将短的那个串进行长度依次递减的子串与较长的串比较。</p></li>
+</ol>
+<p><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LongestString</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        String str1 = <span class="string">&quot;abcwerdwadsawthelloooyuioddawdsef&quot;</span>;</span><br><span class="line">        String str2 = <span class="string">&quot;cvhobnm&quot;</span>;</span><br><span class="line"></span><br><span class="line">        String strShort, strLong;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(str1.length() &gt; str2.length())&#123;</span><br><span class="line">            strShort = str2;</span><br><span class="line">            strLong = str1;</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            strShort = str1;</span><br><span class="line">            strLong = str2;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        String str = longestString(strShort, <span class="keyword">null</span>, strLong, <span class="number">1</span>);</span><br><span class="line">        System.out.println(str);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> strShort: 短字符串</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> strShortArray: 短字符串在当前choice下的各个字串组成的数组</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> strLong: 长字符串</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> choice: 为了找到最长字串，用来标识短字符串长度需要减多少以获得多长的字串</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">longestString</span><span class="params">(String strShort, String[] strShortArray, String strLong, <span class="keyword">int</span> choice)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 先判断所有传入的strShortArray元素都是否是strLong的字串</span></span><br><span class="line">        <span class="keyword">if</span>(strShortArray != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">for</span> (String value : strShortArray) &#123;</span><br><span class="line">                <span class="keyword">if</span> (strLong.contains(value)) &#123;</span><br><span class="line">                    <span class="keyword">return</span> value;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 如不是：进行下一个choice；</span></span><br><span class="line">        <span class="keyword">if</span>(++choice &gt; strShort.length())&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 创建一个字符串数组，用来存储当前choice下的各个strShort字串</span></span><br><span class="line">        String[] strShortNew = <span class="keyword">new</span> String[choice];</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; choice; i++)&#123;</span><br><span class="line">            strShortNew[i] = strShort.substring(i, i + strShort.length() - choice + <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        String s = longestString(strShort, strShortNew, strLong, choice);</span><br><span class="line">        <span class="keyword">return</span> s;</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    <span class="comment">// 第二种方式</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">longestString2</span><span class="params">(String str1, String str2)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(str1 != <span class="keyword">null</span> &amp;&amp; str2 != <span class="keyword">null</span>) &#123;</span><br><span class="line">            String strShort = (str1.length() &gt; str2.length()) ? str2 : str1;</span><br><span class="line">            String strLong = (str1.length() &lt;= str2.length()) ? str2 : str1;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; strShort.length(); i++) &#123; <span class="comment">// 大循环</span></span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> x = <span class="number">0</span>, y = strShort.length() - i; y &lt;= strShort.length(); x++, y++) &#123; <span class="comment">// 内循环：两个指针分别用来取中间的字串</span></span><br><span class="line">                    String subStr = strShort.substring(x, y);</span><br><span class="line">                    <span class="keyword">if</span> (strLong.contains(subStr)) &#123;</span><br><span class="line">                        <span class="keyword">return</span> subStr;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<ol start="5" type="1">
+<li>对字符串中字符进行自然顺序排序。 提示：</li>
+</ol>
+<p>1）字符串变成字符数组。 2）对数组排序，选择，冒泡，Arrays.sort(); 3）将排序后的数组变成字符串。</p>
+<p><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StringSort</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        String str = <span class="string">&quot;abcwerthelloyuiodef&quot;</span>;</span><br><span class="line">        String strSorted = stringSort(str);</span><br><span class="line">        System.out.println(strSorted);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">stringSort</span><span class="params">(String str)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(str != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">char</span>[] ch = str.toCharArray();</span><br><span class="line">            Arrays.sort(ch);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> String(ch);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="stringbuffer类-stringbuilder类以stringbuffer为例">StringBuffer类 &amp; StringBuilder类（以StringBuffer为例）</h3>
+<ol type="1">
+<li><p>String、StringBuffer、StringBuilder三者异同（高频面试题）</p>
+<ul>
+<li>String：不可变的字符序列；底层使用final char[]存储</li>
+<li>StringBuffer：可变的字符序列；线程安全，效率低；底层使用char[]存储</li>
+<li>StringBuilder：可变的字符序列；JDK5.0新增，线程不安全，效率高；底层使用char[]存储</li>
+</ul></li>
+<li><p>底层实现</p>
+<ul>
+<li><p>String</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">String str1 = <span class="keyword">new</span> String(); <span class="comment">// char[] value = new char[0];</span></span><br><span class="line">String str1 = <span class="keyword">new</span> String(<span class="string">&quot;abc&quot;</span>); <span class="comment">// char[] value = new char[]&#123;&#x27;a&#x27;, &#x27;b&#x27;, &#x27;c&#x27;&#125;;</span></span><br></pre></td></tr></table></figure></li>
+<li><p>StringBuffer</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">StringBuffer sb1 = <span class="keyword">new</span> StringBuffer(); <span class="comment">// char[] value = new char[16];</span></span><br><span class="line">sysout(sb1.length()) <span class="comment">// 0</span></span><br><span class="line">sb1.append(<span class="string">&#x27;a&#x27;</span>); <span class="comment">// value[0] = &#x27;a&#x27;;</span></span><br><span class="line">sb1.append(<span class="string">&#x27;b&#x27;</span>); <span class="comment">// value[1] = &#x27;b&#x27;;</span></span><br><span class="line"></span><br><span class="line">StringBuffer sb2 = <span class="keyword">new</span>  StringBuffer(<span class="string">&quot;abc&quot;</span>); </span><br><span class="line">	<span class="comment">// char[] value = new char[&quot;abc&quot;.length() + 16];</span></span><br><span class="line">sysout(sb2.length())<span class="comment">// 3</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>如果要添加的数据底层数组盛不下了，则需要扩容底层数组。默认情况下扩容为原来容量的2倍+2，同时将原有数组中元素复制到新数组中</li>
+<li>指导意义：开发中建议使用：StringBuffer(int capacity)构造器或StringBuilder(int capacity)指定底层数组长度以减少重新分配数组的内存空间；</li>
+</ul></li>
+</ul></li>
+<li><p>StringBuffer类常用方法(StringBuilder含有相同的方法，只是方法线程不同步)</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function">StringBuffer <span class="title">append</span><span class="params">(xxx)</span>：提供了很多的<span class="title">append</span><span class="params">()</span>方法，用于进行字符串拼接</span></span><br><span class="line"><span class="function">StringBuffer <span class="title">delete</span><span class="params">(<span class="keyword">int</span> start,<span class="keyword">int</span> end)</span>：删除指定位置的内容</span></span><br><span class="line"><span class="function">StringBuffer <span class="title">replace</span><span class="params">(<span class="keyword">int</span> start, <span class="keyword">int</span> end, String str)</span>：把[start,end)位置替换为str StringBuffer <span class="title">insert</span><span class="params">(<span class="keyword">int</span> offset, xxx)</span>：在指定位置插入xxx</span></span><br><span class="line"><span class="function">StringBuffer <span class="title">reverse</span><span class="params">()</span> ：把当前字符序列逆转</span></span><br><span class="line"><span class="function">                                                       </span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">indexOf</span><span class="params">(String str)</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">substring</span><span class="params">(<span class="keyword">int</span> start,<span class="keyword">int</span> end)</span> </span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">length</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">char</span> <span class="title">charAt</span><span class="params">(<span class="keyword">int</span> n )</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setCharAt</span><span class="params">(<span class="keyword">int</span> n ,<span class="keyword">char</span> ch)</span></span></span><br></pre></td></tr></table></figure></li>
+<li><p>总结</p>
+<ul>
+<li>增：append(xxx)</li>
+<li>删：delete(int start,int end)</li>
+<li>改：setCharAt(int n ,char ch)；replace(int start, int end, String str)</li>
+<li>查：charAt(int n )</li>
+<li>插：insert(int offset, xxx)</li>
+<li>长度：length()</li>
+<li>遍历：for + charAt 或 toString方法</li>
+</ul></li>
+<li><p>效率比较：</p>
+<ul>
+<li>StringBuilder &gt; StringBuffer &gt; String</li>
+</ul></li>
+</ol>
+<h2 id="二jdk-8之前的日期时间apisystem静态方法date类calendar类simpledateformat类">二、JDK 8之前的日期时间API（System静态方法、Date类，Calendar类、SimpleDateFormat类）</h2>
+<h3 id="system静态方法">System静态方法</h3>
+<ol type="1">
+<li>System类提供的<strong>public static long currentTimeMillis()</strong>
+<ul>
+<li>用来返回当前时间与1970年1月1日0时0分0秒之间以毫秒为单位的时间差。</li>
+<li>称为时间戳</li>
+<li>可用来计算代码执行的时长</li>
+</ul></li>
+</ol>
+<h3 id="java.util.date类">java.util.Date类</h3>
+<p>java中的Date类有java.util.Date，java.sql.Date；java.util.Date为java.sql.Date父类</p>
+<ol type="1">
+<li><p>两个构造器的使用（java.util.Date）</p>
+<ul>
+<li><p>构造器一：创建一个对应当前时间的Date对象</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Date date = <span class="keyword">new</span> Date();</span><br><span class="line">sysout(date.toString());</span><br></pre></td></tr></table></figure></li>
+<li><p>构造器二：创建指定毫秒数的Date对象</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Date date2 = <span class="keyword">new</span> Date(<span class="number">1555100545L</span>);</span><br></pre></td></tr></table></figure></li>
+</ul></li>
+<li><p>两个方法的使用</p>
+<ul>
+<li>toString()：返回当前的年、月、日、时、分、秒字符串</li>
+<li>getTime()：获取当前Date对象对应的毫秒数（时间戳）</li>
+</ul></li>
+<li><p>java.sql.Date对应着数据库中的日期类型的变量</p>
+<ul>
+<li><p>创建java.sql.Date对象</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">java.sql.Date date = <span class="keyword">new</span> java.sql.Date(<span class="number">1555555555L</span>);</span><br></pre></td></tr></table></figure></li>
+<li><p>将java.util.Date对象转化为java.sql.Date对象</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">java.util.Date date = <span class="keyword">new</span> java.util.Date();</span><br><span class="line">java.sql.Date dateSql = <span class="keyword">new</span> java.sql.Date(date.getTime());</span><br></pre></td></tr></table></figure></li>
+</ul></li>
+</ol>
+<h3 id="java.text.simpledateformat类">java.text.SimpleDateFormat类</h3>
+<p>SimpleDateFormat的使用：SimpleDateFormat对日期Date类的格式化和解析</p>
+<ol type="1">
+<li><p>两个操作</p>
+<ul>
+<li><p>格式化：日期 --&gt; 字符串</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 默认构造器</span></span><br><span class="line">SimpleDateFormat sdf = <span class="keyword">new</span> SimpleDateFormat();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 格式化</span></span><br><span class="line">Date date = <span class="keyword">new</span> Date();</span><br><span class="line">String format = sdf.format(date);</span><br><span class="line">System.out.println(format); <span class="comment">// 21-9-16 下午4:32</span></span><br></pre></td></tr></table></figure></li>
+<li><p>解析：（格式化逆过程）字符串 --&gt; 日期</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 解析</span></span><br><span class="line">String str = <span class="string">&quot;21-9-16 下午4:23&quot;</span>;</span><br><span class="line">Date date1 = <span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    date1 = sdf.parse(str);</span><br><span class="line">&#125; <span class="keyword">catch</span> (ParseException e) &#123;</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">&#125;</span><br><span class="line">System.out.println(date1); <span class="comment">// Thu Sep 16 16:23:00 CST 2021</span></span><br></pre></td></tr></table></figure></li>
+<li><p>指定方式格式化：调用带参构造器</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">//******指定方式格式化:调用带参构造器, 可参考API手册**************</span></span><br><span class="line"><span class="comment">//SimpleDateFormat simpleDateFormat = new SimpleDateFormat(&quot;yyyyy.MMMMM.dd GGG hh:mm aaa&quot;);</span></span><br><span class="line"></span><br><span class="line">SimpleDateFormat simpleDateFormat = <span class="keyword">new</span> SimpleDateFormat(<span class="string">&quot;yyyy.MM.dd HH:mm:ss&quot;</span>); </span><br><span class="line"><span class="comment">// HH: 24h制； hh: 12h制</span></span><br><span class="line">Date date = <span class="keyword">new</span> Date();</span><br><span class="line">String format1 = simpleDateFormat.format(date);</span><br><span class="line">System.out.println(format1); <span class="comment">// 2021.09.16 04:32:23</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 解析: 要求字符串必须符合SimpleDateFormat识别的格式（通过构造器参数指定），否则会抛异常</span></span><br><span class="line">Date date2 = <span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    date2 = simpleDateFormat.parse(<span class="string">&quot;2021.09.16 04:32:23&quot;</span>);</span><br><span class="line">&#125; <span class="keyword">catch</span> (ParseException e) &#123;</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">&#125;</span><br><span class="line">System.out.println(date2); <span class="comment">// Thu Sep 16 04:32:23 CST 2021</span></span><br></pre></td></tr></table></figure>
+<figure>
+<img src="/2022/09/02/Coding/Java/09Java%E5%B8%B8%E7%94%A8%E7%B1%BB/71%20Day%20-%2002.png" alt="日期或时间元素的字母表示"><figcaption aria-hidden="true">日期或时间元素的字母表示</figcaption>
+</figure></li>
+</ul></li>
+<li><p>练习</p>
+<ul>
+<li><p>字符串“2020-09-08”转换为java.sql.Date</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test2</span><span class="params">()</span> <span class="keyword">throws</span> ParseException </span>&#123;</span><br><span class="line">    String str = <span class="string">&quot;2020-09-08&quot;</span>;</span><br><span class="line">    SimpleDateFormat simpleDateFormat = <span class="keyword">new</span> SimpleDateFormat(<span class="string">&quot;yyyy-MM-dd&quot;</span>);</span><br><span class="line">    Date date = simpleDateFormat.parse(str);</span><br><span class="line">    java.sql.Date dateSql = <span class="keyword">new</span> java.sql.Date(date.getTime());</span><br><span class="line">    System.out.println(dateSql);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>"三天打鱼两天晒网"，如果该渔夫从1990-01-01开始按俗语执行，问到某年某月某日时该渔夫是在打鱼还是晒网</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 总天数 mod 5：若为1、2、3则为打鱼；若为0、4则为晒网</span></span><br><span class="line"><span class="comment">// 总天数计算</span></span><br><span class="line"><span class="comment">// 		方式一：(date2.getTime() - date1.getTime()) / (1000 * 60 * 60 * 24) + 1</span></span><br><span class="line"><span class="comment">// 		方式二：计算整年天数 + 在某年内的天数</span></span><br></pre></td></tr></table></figure></li>
+</ul></li>
+</ol>
+<h3 id="calendar类">Calendar类</h3>
+<p>Calendar是一个抽象基类，主用用于完成日期字段之间相互操作的功能。</p>
+<p>获取Calendar实例的方法</p>
+<ul>
+<li>使用Calendar.getInstance()方法</li>
+<li>调用它的子类GregorianCalendar的构造器。</li>
+</ul>
+<ol type="1">
+<li><p>使用方式</p>
+<ul>
+<li><p>实例化</p>
+<ul>
+<li><p>方式一（不常用）：调用它的子类GregorianCalendar的构造器。</p></li>
+<li><p>方式二：使用Calendar.getInstance()方法</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Calendar calendar = Calendar.getInstance();</span><br></pre></td></tr></table></figure></li>
+</ul></li>
+<li><p>常用方法</p>
+<ul>
+<li>get():</li>
+<li>set()</li>
+<li>add()</li>
+<li>getTime()</li>
+<li>setTime()</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span>&#123;</span><br><span class="line">        Calendar calendar = Calendar.getInstance();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// get()</span></span><br><span class="line">        <span class="keyword">int</span> daysInMonth = calendar.get(Calendar.DAY_OF_MONTH);</span><br><span class="line">        <span class="keyword">int</span> daysInYear = calendar.get(Calendar.DAY_OF_YEAR);</span><br><span class="line">        System.out.println(<span class="string">&quot;today is &quot;</span> + daysInMonth + <span class="string">&quot;-th day in this month, &quot;</span></span><br><span class="line">                + daysInYear + <span class="string">&quot;-th day in this year&quot;</span>);</span><br><span class="line">        <span class="comment">// today is 16-th day in this month, 259-th day in this year</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// set()</span></span><br><span class="line">        calendar.set(Calendar.DAY_OF_MONTH, <span class="number">22</span>);</span><br><span class="line">        daysInMonth = calendar.get(Calendar.DAY_OF_MONTH);</span><br><span class="line">        daysInYear = calendar.get(Calendar.DAY_OF_YEAR);</span><br><span class="line">        System.out.println(<span class="string">&quot;today is &quot;</span> + daysInMonth + <span class="string">&quot;-th day in this month, &quot;</span></span><br><span class="line">                + daysInYear + <span class="string">&quot;-th day in this year&quot;</span>);</span><br><span class="line">        <span class="comment">// today is 22-th day in this month, 265-th day in this year</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// add()</span></span><br><span class="line">        calendar.add(Calendar.DAY_OF_MONTH, <span class="number">5</span>);</span><br><span class="line">        daysInMonth = calendar.get(Calendar.DAY_OF_MONTH);</span><br><span class="line">        daysInYear = calendar.get(Calendar.DAY_OF_YEAR);</span><br><span class="line">        System.out.println(<span class="string">&quot;today is &quot;</span> + daysInMonth + <span class="string">&quot;-th day in this month, &quot;</span></span><br><span class="line">                + daysInYear + <span class="string">&quot;-th day in this year&quot;</span>);</span><br><span class="line">        <span class="comment">// today is 27-th day in this month, 270-th day in this year</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// getTime()</span></span><br><span class="line">        Date date = calendar.getTime();</span><br><span class="line">        System.out.println(date);</span><br><span class="line">        <span class="comment">// Mon Sep 27 21:27:07 CST 2021</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// setTime()</span></span><br><span class="line">        Date dateSet = <span class="keyword">new</span> Date();</span><br><span class="line">        calendar.setTime(dateSet);</span><br><span class="line">        <span class="comment">// 获得的Month从0开始</span></span><br><span class="line">        System.out.println(calendar.get(Calendar.YEAR) + <span class="string">&quot;年&quot;</span></span><br><span class="line">                +  (calendar.get(Calendar.MONTH)+<span class="number">1</span>) + <span class="string">&quot;月&quot;</span></span><br><span class="line">                + calendar.get(Calendar.DATE) + <span class="string">&quot;日&quot;</span>);</span><br><span class="line">        <span class="comment">// 2021年9月16日</span></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></li>
+</ul></li>
+<li><p>注意点</p>
+<ul>
+<li>获取月份时：一月是0，二月是1，以此类推，12月是11</li>
+<li>获取星期时：周日是1，周二是2 ， 。。。。周六是7</li>
+</ul></li>
+</ol>
+<h2 id="三jdk-8中新日期时间apilocaldatelocaltimelocaldatetimeinstantdatetimeformatter其他类">三、JDK 8中新日期时间API（LocalDate、LocalTime、LocalDateTime、Instant、DateTimeFormatter、其他类）</h2>
+<p>JDK 1.0中包含了一个java.util.Date类，但是它的大多数方法已经在JDK 1.1引入Calendar类之后被弃用了。而Calendar并不比Date好多少。它们面临的问题是：</p>
+<ul>
+<li>可变性：像日期和时间这样的类应该是不可变的。</li>
+<li>偏移性：Date中的年份是从1900开始的，而月份都从0开始。</li>
+<li>格式化：格式化只对Date有用，Calendar则不行。</li>
+<li>此外，它们也不是线程安全的；不能处理闰秒等。</li>
+</ul>
+<p>总结：对日期和时间的操作一直是Java程序员最痛苦的地方之一。</p>
+<h3 id="第三次引入api">第三次引入API</h3>
+<p><strong>第三次引入的API</strong>是成功的，并且Java 8中引入的java.time API 已经纠正了过去的缺陷，将来很长一段时间内它都会为我们服务。 Java 8 吸收了<strong>Joda-Time（开源jar）</strong>的精华，以一个新的开始为 Java 创建优秀的API。新的 java.time 中包含了所有关于本地日期（LocalDate）、本地时间（LocalTime）、本地日期时间（LocalDateTime）、时区（ZonedDateTime）和持续时间（Duration）的类。历史悠久的 Date 类新增了 toInstant() 方法，用于把 Date 转换成新的表示形式。这些新增的本地化时间日期API 大大简化了日期时间和本地化的管理。</p>
+<h4 id="新日期api">新日期API</h4>
+<ul>
+<li><strong>java.time</strong> – 包含值对象的<strong>基础包</strong></li>
+<li>java.time.chrono – 提供对不同的日历系统的访问</li>
+<li><strong>java.time.format</strong> – 格式化和解析时间和日期</li>
+<li><strong>java.time.temporal</strong> – 包括底层框架和扩展特性</li>
+<li>java.time.zone – 包含时区支持的类</li>
+</ul>
+<p>大多数开发者只会用到基础包和format包，也可能会用到temporal包。因此，尽管有68个新的公开类型，大多数开发者，大概将只会用到其中的三分之一。</p>
+<h4 id="常用的类">常用的类：</h4>
+<p><strong>LocalDate、LocalTime、LocalDateTime</strong> 类是其中较重要的几个类，它们的实例是<strong>不可变的对象</strong>，分别表示使用 ISO-8601日历系统的日期、时间、日期和时间。它们提供了简单的本地日期或时间，并不包含当前的时间信息，也不包含与时区相关的信息。</p>
+<ul>
+<li>LocalDate代表IOS格式（yyyy-MM-dd）的日期,可以存储 生日、纪念日等日期。</li>
+<li>LocalTime表示一个时间，而不是日期。</li>
+<li>LocalDateTime是用来表示日期和时间的，这是一个<strong>最常用的类之一</strong>。</li>
+</ul>
+<h4 id="新日期api的三个常用类的使用">新日期API的三个常用类的使用</h4>
+<ol type="1">
+<li><p>实例化</p>
+<ul>
+<li><p>now()<strong>静态</strong>方法</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// now()</span></span><br><span class="line">LocalDate localDate = LocalDate.now(); <span class="comment">// 2021-09-16</span></span><br><span class="line">LocalTime localTime = LocalTime.now(); <span class="comment">// 21:56:48.358</span></span><br><span class="line">LocalDateTime localDateTime = LocalDateTime.now(); </span><br><span class="line"><span class="comment">// 2021-09-16T21:56:48.358</span></span><br><span class="line"></span><br><span class="line">System.out.println(localDate);</span><br><span class="line">System.out.println(localTime);</span><br><span class="line">System.out.println(localDateTime);</span><br></pre></td></tr></table></figure></li>
+<li><p>of()<strong>静态</strong>方法</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// of()方法: 设置指定的年、月、日、时、分、秒，无偏移量</span></span><br><span class="line">LocalDate localDate1 = LocalDate.of(<span class="number">2021</span>, <span class="number">10</span>, <span class="number">16</span>); <span class="comment">// 2021-10-16</span></span><br><span class="line">LocalTime localTime1 = LocalTime.of(<span class="number">15</span>, <span class="number">59</span>, <span class="number">50</span>, <span class="number">500000000</span>); <span class="comment">// 15:59:50.500</span></span><br><span class="line">LocalDateTime localDateTime1 = LocalDateTime.of(<span class="number">2021</span>, <span class="number">10</span>,</span><br><span class="line">                                                <span class="number">16</span>, <span class="number">15</span>, <span class="number">59</span>, <span class="number">50</span>, <span class="number">500000000</span>); </span><br><span class="line"><span class="comment">// 2021-10-16T15:59:50.500</span></span><br><span class="line"></span><br><span class="line">System.out.println(localDate1);</span><br><span class="line">System.out.println(localTime1);</span><br><span class="line">System.out.println(localDateTime1);</span><br></pre></td></tr></table></figure></li>
+</ul></li>
+<li><p>相关方法</p>
+<ul>
+<li><p>get</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">getDayOfMonth()/getDayOfYear() <span class="comment">// 获得月份天数(1-31) /获得年份天数(1-366)</span></span><br><span class="line">getDayOfWeek() <span class="comment">// 获得星期几(返回一个 DayOfWeek 枚举值)</span></span><br><span class="line">getMonth() <span class="comment">// 获得月份, 返回一个 Month 枚举值</span></span><br><span class="line">getMonthValue() / getYear() <span class="comment">// 获得月份(1-12) /获得年份</span></span><br><span class="line">getHour()/getMinute()/getSecond() <span class="comment">// 获得当前对象对应的小时、分钟、秒</span></span><br></pre></td></tr></table></figure></li>
+<li><p>set: 体现不可变性</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">withDayOfMonth()/withDayOfYear()/withMonth()/withYear()/withHour()/withXxx()</span><br><span class="line"><span class="comment">//将月份天数、年份天数、月份、年份、小时等修改为指定的值并返回新的对象</span></span><br></pre></td></tr></table></figure></li>
+<li><p>add</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">plusDays(), plusWeeks(), plusMonths(), plusYears(),plusHours()</span><br><span class="line"><span class="comment">// 向当前对象添加几天、几周、几个月、几年、几小时</span></span><br></pre></td></tr></table></figure></li>
+<li><p>minus</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">minusMonths() / minusWeeks()/minusDays()/minusYears()/minusHours()</span><br><span class="line"><span class="comment">// 从当前对象减去几月、几周、几天、几年、几小时</span></span><br></pre></td></tr></table></figure></li>
+</ul></li>
+</ol>
+<h4 id="瞬时instant类">瞬时：Instant类</h4>
+<ul>
+<li>Instant：时间线上的一个瞬时点。 这可能被用来记录应用程序中的<strong>事件时间戳</strong>。</li>
+<li>在处理时间和日期的时候，我们通常会想到年,月,日,时,分,秒。然而，这只是时间的一个模型，是面向人类的。第二种通用模型是面向机器的，或者说是连续的。在此模型中，时间线中的一个点表示为一个很大的数，这有利于计算机处理。在UNIX中，这个数从1970年开始，以秒为的单位；同样的，在Java中，也是从1970年开始，但以毫秒为单位。</li>
+<li>java.time包通过值类型Instant提供机器视图，不提供处理人类意义上的时间单位。Instant表示时间线上的一点，而不需要任何上下文信息，例如，时区。概念上讲，它只是简单的表示自1970年1月1日0时0分0秒（UTC）开始的秒数。因为java.time包是基于纳秒计算的，所以Instant的精度可以达到纳秒级。</li>
+<li>(1 ns = 10-9 s) 1秒 = 1000毫秒 =10<sup>6微秒=10</sup>9纳秒</li>
+</ul>
+<ol type="1">
+<li><p>实例化</p>
+<ul>
+<li><p>now(): 获取本初子午线对应的标准时间 ( UTC )</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// now()</span></span><br><span class="line">Instant instant = Instant.now();</span><br><span class="line">System.out.println(instant); <span class="comment">// UTC: 2021-09-16T14:17:29.692Z</span></span><br></pre></td></tr></table></figure></li>
+<li><p>atOffset(): 添加时间的偏移量</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 添加时间的偏移量</span></span><br><span class="line">Instant instant = Instant.now();</span><br><span class="line">OffsetDateTime offsetDateTime = instant.atOffset(ZoneOffset.ofHours(<span class="number">8</span>));</span><br><span class="line">System.out.println(offsetDateTime); <span class="comment">// 2021-09-16T22:17:29.692+08:00</span></span><br></pre></td></tr></table></figure></li>
+<li><p>ofEpochMilli(long epochMilli): 通过给定毫秒数，获取Instant实例</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">//静态方法，返回在1970-01-01 00:00:00基础上加上指定毫秒数之后的Instant类的对象</span></span><br><span class="line">ofEpochMilli(<span class="keyword">long</span> epochMilli)</span><br></pre></td></tr></table></figure></li>
+</ul></li>
+<li><p>方法</p>
+<ul>
+<li><p>toEpochMilli()</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">toEpochMilli() <span class="comment">// 返回1970-01-01 00:00:00到当前时间的毫秒数，即为时间戳</span></span><br></pre></td></tr></table></figure></li>
+</ul></li>
+</ol>
+<h4 id="格式化与解析日期或时间-java.time.format.datetimeformatter">格式化与解析日期或时间 java.time.format.DateTimeFormatter</h4>
+<ol type="1">
+<li><p>格式化方法</p>
+<ul>
+<li><p>预定义的标准格式。如：ISO_LOCAL_DATE_TIME;ISO_LOCAL_DATE;ISO_LOCAL_TIME</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">DateTimeFormatter isoLocalDateTime = DateTimeFormatter.ISO_LOCAL_DATE_TIME;</span><br><span class="line">String str = isoLocalDateTime.format(LocalDateTime.now());</span><br><span class="line">System.out.println(str); <span class="comment">// 2021-09-16T22:31:23.101</span></span><br><span class="line">System.out.println(LocalDateTime.now());<span class="comment">// 2021-09-16T22:31:23.101</span></span><br></pre></td></tr></table></figure></li>
+<li><p>本地化相关的格式。如：ofLocalizedDateTime(FormatStyle.LONG)</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">DateTimeFormatter isoLocalDateTime = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG);</span><br><span class="line">String str = isoLocalDateTime.format(LocalDateTime.now());</span><br><span class="line">System.out.println(str); <span class="comment">// 2021年9月16日 下午10时31分23秒</span></span><br><span class="line">System.out.println(LocalDateTime.now()); <span class="comment">// 2021-09-16T22:31:23.101</span></span><br></pre></td></tr></table></figure></li>
+<li><p>自定义的格式。如：ofPattern(“yyyy-MM-dd hh:mm:ss”)</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">DateTimeFormatter isoLocalDateTime = DateTimeFormatter.ofPattern(<span class="string">&quot;yyyy-MM-dd HH:mm:ss&quot;</span>);</span><br><span class="line">String str = isoLocalDateTime.format(LocalDateTime.now());</span><br><span class="line">System.out.println(str); <span class="comment">// 2021-09-16 22:33:03</span></span><br><span class="line">System.out.println(LocalDateTime.now()); <span class="comment">// 2021-09-16T22:33:03.181</span></span><br></pre></td></tr></table></figure></li>
+</ul></li>
+<li><p>解析 parse</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">DateTimeFormatter isoLocalDateTime = DateTimeFormatter.ofPattern(<span class="string">&quot;yyyy-MM-dd HH:mm:ss&quot;</span>);</span><br><span class="line">TemporalAccessor parse = isoLocalDateTime.parse(<span class="string">&quot;2021-09-16 23:20:20&quot;</span>);</span><br><span class="line">System.out.println(parse); <span class="comment">// &#123;&#125;,ISO resolved to 2021-09-16T23:20:20</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<h4 id="其他api">其他API</h4>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">ZoneId：该类中包含了所有的时区信息，一个时区的ID，如 Europe/Paris</span><br><span class="line">ZonedDateTime：一个在ISO-<span class="number">8601</span>日历系统时区的日期时间，如 <span class="number">2007</span>-<span class="number">12</span>-03T10:<span class="number">15</span>:<span class="number">30</span>+<span class="number">01</span>:<span class="number">00</span> Europe/Paris。</span><br><span class="line">				其中每个时区都对应着ID，地区ID都为“&#123;区域&#125;/&#123;城市&#125;”的格式，例如：Asia/Shanghai等</span><br><span class="line">Clock：使用时区提供对当前即时、日期和时间的访问的时钟。</span><br><span class="line">持续时间：Duration，用于计算两个“时间”间隔</span><br><span class="line">日期间隔：Period，用于计算两个“日期”间隔</span><br><span class="line">TemporalAdjuster : 时间校正器。有时我们可能需要获取例如：将日期调整到“下一个工作日”等操作。</span><br><span class="line">TemporalAdjusters : 该类通过静态方法</span><br><span class="line">(firstDayOfXxx()/lastDayOfXxx()/nextXxx())提供了大量的常用TemporalAdjuster 的实现。</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">//ZoneId:类中包含了所有的时区信息</span></span><br><span class="line"><span class="comment">// ZoneId的getAvailableZoneIds():获取所有的ZoneId</span></span><br><span class="line">Set&lt;String&gt; zoneIds = ZoneId.getAvailableZoneIds();</span><br><span class="line"><span class="keyword">for</span> (String s : zoneIds) &#123;</span><br><span class="line">System.out.println(s);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// ZoneId的of():获取指定时区的时间</span></span><br><span class="line">LocalDateTime localDateTime = LocalDateTime.now(ZoneId.of(<span class="string">&quot;Asia/Tokyo&quot;</span>)); System.out.println(localDateTime);</span><br><span class="line"><span class="comment">//ZonedDateTime:带时区的日期时间</span></span><br><span class="line"><span class="comment">// ZonedDateTime的now():获取本时区的ZonedDateTime对象</span></span><br><span class="line">ZonedDateTime zonedDateTime = ZonedDateTime.now();</span><br><span class="line">System.out.println(zonedDateTime);</span><br><span class="line"><span class="comment">// ZonedDateTime的now(ZoneId id):获取指定时区的ZonedDateTime对象ZonedDateTime zonedDateTime1 = ZonedDateTime.now(ZoneId.of(&quot;Asia/Tokyo&quot;)); System.out.println(zonedDateTime1);</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//Duration:用于计算两个“时间”间隔，以秒和纳秒为基准</span></span><br><span class="line">LocalTime localTime = LocalTime.now();</span><br><span class="line">LocalTime localTime1 = LocalTime.of(<span class="number">15</span>, <span class="number">23</span>, <span class="number">32</span>);</span><br><span class="line"><span class="comment">//between():静态方法，返回Duration对象，表示两个时间的间隔</span></span><br><span class="line">Duration duration = Duration.between(localTime1, localTime);</span><br><span class="line">System.out.println(duration);</span><br><span class="line">System.out.println(duration.getSeconds());</span><br><span class="line">System.out.println(duration.getNano());</span><br><span class="line">LocalDateTime localDateTime = LocalDateTime.of(<span class="number">2016</span>, <span class="number">6</span>, <span class="number">12</span>, <span class="number">15</span>, <span class="number">23</span>, <span class="number">32</span>); LocalDateTime localDateTime1 = LocalDateTime.of(<span class="number">2017</span>, <span class="number">6</span>, <span class="number">12</span>, <span class="number">15</span>, <span class="number">23</span>, <span class="number">32</span>);</span><br><span class="line">Duration duration1 = Duration.between(localDateTime1, localDateTime); System.out.println(duration1.toDays());</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//Period:用于计算两个“日期”间隔，以年、月、日衡量LocalDate localDate = LocalDate.now();</span></span><br><span class="line">LocalDate localDate1 = LocalDate.of(<span class="number">2028</span>, <span class="number">3</span>, <span class="number">18</span>);</span><br><span class="line">Period period = Period.between(localDate, localDate1); System.out.println(period);</span><br><span class="line">System.out.println(period.getYears());</span><br><span class="line">System.out.println(period.getMonths());</span><br><span class="line">System.out.println(period.getDays());</span><br><span class="line">Period period1 = period.withYears(<span class="number">2</span>);</span><br><span class="line">System.out.println(period1);</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// TemporalAdjuster:时间校正器</span></span><br><span class="line"><span class="comment">// 获取当前日期的下一个周日是哪天？</span></span><br><span class="line">TemporalAdjuster temporalAdjuster = TemporalAdjusters.next(DayOfWeek.SUNDAY); LocalDateTime localDateTime = LocalDateTime.now().with(temporalAdjuster); System.out.println(localDateTime);</span><br><span class="line"><span class="comment">// 获取下一个工作日是哪天？</span></span><br><span class="line">LocalDate localDate = LocalDate.now().with(<span class="keyword">new</span> TemporalAdjuster() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> Temporal <span class="title">adjustInto</span><span class="params">(Temporal temporal)</span> </span>&#123;</span><br><span class="line">        LocalDate date = (LocalDate) temporal;</span><br><span class="line">        <span class="keyword">if</span> (date.getDayOfWeek().equals(DayOfWeek.FRIDAY)) &#123;</span><br><span class="line">        <span class="keyword">return</span> date.plusDays(<span class="number">3</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (date.getDayOfWeek().equals(DayOfWeek.SATURDAY)) &#123;</span><br><span class="line">        <span class="keyword">return</span> date.plusDays(<span class="number">2</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> date.plusDays(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line">System.out.println(<span class="string">&quot;下一个工作日是：&quot;</span> + localDate);</span><br></pre></td></tr></table></figure>
+<h2 id="四java比较器comparable接口comparator接口重点">四、Java比较器（Comparable接口、Comparator接口）(重点)</h2>
+<p>java中的对象正常情况下只能进行== 或 ！= ，不能使用 &gt; 或 &lt;。但在开发场景中，我们需要对多个对象进行排序， Java实现对象排序的方式有两种：</p>
+<ol type="1">
+<li><p>自然排序：java.lang.Comparable</p>
+<ul>
+<li>像String、包装类等实现了Comparable接口，重写了compareTo()方法，给出了比较两个对象大小的方式</li>
+<li>像String、包装类重写compareTo()方法后，在通过Arrays.sort()或集合的排序方法调用时会对数组或集合中的元素进行<strong>从小到大的排序</strong></li>
+<li>重写compareTo()的规则
+<ul>
+<li>Comparable接口强行对实现它的每个类的对象进行整体排序。这种排序被称为类的自然排序。</li>
+<li>实现 Comparable 的类必须实现 compareTo(Object obj) 方法，<strong>两个对象即通过 compareTo(Object obj) 方法的返回值来比较大小。如果当前对象this大于形参对象obj，则返回正整数，如果当前对象this小于形参对象obj，则返回负整数，如果当前对象this等于形参对象obj，则返回零。</strong></li>
+<li><strong>实现Comparable接口的对象列表（和数组）可以通过 Collections.sort 或Arrays.sort进行自动排序。实现此接口的对象可以用作有序映射中的键或有序集合中的元素，无需指定比较器。</strong></li>
+<li>对于类 C 的每一个 e1 和 e2 来说，当且仅当 e1.compareTo(e2) == 0 与e1.equals(e2) 具有相同的 boolean 值时，类 C 的自然排序才叫做与 equals一致。建议（虽然不是必需的）最好使自然排序与 equals 一致。</li>
+</ul></li>
+<li>如果自定义类的对象需要排序，应让自定义类实现Comparable接口，重写compareTo()方法</li>
+</ul></li>
+<li><p>定制排序：java.util.Comparator</p>
+<ul>
+<li><strong>当元素的类型没有实现java.lang.Comparable接口而又不方便修改代码，或者实现了java.lang.Comparable接口的排序规则不适合当前的操作，那么可以考虑使用 Comparator 的对象来排序，强行对多个对象进行整体排序的比较。</strong></li>
+<li><strong>重写compare(Object o1,Object o2)方法</strong>，比较o1和o2的大小：如果方法返回正整数，则表示o1大于o2；如果返回0，表示相等；返回负整数，表示o1小于o2。</li>
+<li>可以<strong>将 Comparator 传递给 sort 方法</strong>（如 Collections.sort 或Arrays.sort），从而允许在排序顺序上实现精确控制。</li>
+<li>还可以使用 Comparator 来控制某些数据结构（如有序 set或有序映射）的顺序，或者为那些没有自然顺序的对象 collection 提供排序。</li>
+</ul></li>
+<li><p>代码实现</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CompareTest</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span>&#123;</span><br><span class="line">        Goods[] goods = <span class="keyword">new</span> Goods[<span class="number">5</span>];</span><br><span class="line">        goods[<span class="number">0</span>] = <span class="keyword">new</span> Goods(<span class="string">&quot;lenovoMouse&quot;</span>, <span class="number">34</span>);</span><br><span class="line">        goods[<span class="number">1</span>] = <span class="keyword">new</span> Goods(<span class="string">&quot;dellMouse&quot;</span>, <span class="number">43</span>);</span><br><span class="line">        goods[<span class="number">2</span>] = <span class="keyword">new</span> Goods(<span class="string">&quot;xiaomiMouse&quot;</span>, <span class="number">12</span>);</span><br><span class="line">        goods[<span class="number">3</span>] = <span class="keyword">new</span> Goods(<span class="string">&quot;huaweiMouse&quot;</span>, <span class="number">65</span>);</span><br><span class="line">        goods[<span class="number">4</span>] = <span class="keyword">new</span> Goods(<span class="string">&quot;microsoftMouse&quot;</span>, <span class="number">43</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 通过Comparable接口中的compareTo()方法实现排序</span></span><br><span class="line">        Arrays.sort(goods);</span><br><span class="line">        System.out.println(Arrays.toString(goods));</span><br><span class="line">        <span class="comment">// [Goods&#123;name=&#x27;xiaomiMouse&#x27;, price=12.0&#125;, Goods&#123;name=&#x27;lenovoMouse&#x27;, price=34.0&#125;,</span></span><br><span class="line">        <span class="comment">// Goods&#123;name=&#x27;dellMouse&#x27;, price=43.0&#125;, Goods&#123;name=&#x27;microsoftMouse&#x27;, price=43.0&#125;,</span></span><br><span class="line">        <span class="comment">// Goods&#123;name=&#x27;huaweiMouse&#x27;, price=65.0&#125;]</span></span><br><span class="line"></span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 通过Comparator接口的匿名类的匿名对象实现排序</span></span><br><span class="line">        Arrays.sort(goods, <span class="keyword">new</span> Comparator() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(Object o1, Object o2)</span> </span>&#123;</span><br><span class="line">                <span class="keyword">if</span>(o1 <span class="keyword">instanceof</span> Goods &amp;&amp; o2 <span class="keyword">instanceof</span> Goods)&#123;</span><br><span class="line">                    <span class="comment">// &lt;时返回正整数，&gt;时返回负整数；调用sort方法时将为从大到小排序</span></span><br><span class="line">                    <span class="keyword">if</span>(((Goods) o1).price &lt; ((Goods) o2).price)&#123;</span><br><span class="line">                        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">                    &#125;<span class="keyword">else</span> <span class="keyword">if</span>(((Goods) o1).price &gt; ((Goods) o2).price)&#123;</span><br><span class="line">                        <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">                    &#125;<span class="keyword">else</span></span><br><span class="line">                        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;数据类型不一致&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;);</span><br><span class="line">        System.out.println(Arrays.toString(goods));</span><br><span class="line">        <span class="comment">//[Goods&#123;name=&#x27;huaweiMouse&#x27;, price=65.0&#125;, Goods&#123;name=&#x27;dellMouse&#x27;, price=43.0&#125;,</span></span><br><span class="line">        <span class="comment">//Goods&#123;name=&#x27;microsoftMouse&#x27;, price=43.0&#125;, Goods&#123;name=&#x27;lenovoMouse&#x27;, price=34.0&#125;,</span></span><br><span class="line">        <span class="comment">//Goods&#123;name=&#x27;xiaomiMouse&#x27;, price=12.0&#125;]</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Comparable接口实现类</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Goods</span> <span class="keyword">implements</span> <span class="title">Comparable</span></span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> String name;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">double</span> price;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Goods</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Goods</span><span class="params">(String name, <span class="keyword">double</span> price)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.name = name;</span><br><span class="line">            <span class="keyword">this</span>.price = price;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> name;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">getPrice</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> price;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.name = name;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setPrice</span><span class="params">(<span class="keyword">double</span> price)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.price = price;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compareTo</span><span class="params">(Object o)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">if</span>(o <span class="keyword">instanceof</span> Goods)&#123;</span><br><span class="line">                Goods goods = (Goods) o;</span><br><span class="line">                <span class="keyword">if</span>(<span class="keyword">this</span>.price &gt; goods.price)&#123;</span><br><span class="line">                    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">                &#125;<span class="keyword">else</span> <span class="keyword">if</span>(<span class="keyword">this</span>.price &lt; goods.price)&#123;</span><br><span class="line">                    <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">                &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;类型不一致&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;Goods&#123;&quot;</span> +</span><br><span class="line">                    <span class="string">&quot;name=&#x27;&quot;</span> + name + <span class="string">&#x27;\&#x27;&#x27;</span> +</span><br><span class="line">                    <span class="string">&quot;, price=&quot;</span> + price +</span><br><span class="line">                    <span class="string">&#x27;&#125;&#x27;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>Comparable和Comparator接口使用的对比</p>
+<ul>
+<li>Comparable接口的方式一旦一定，保证Comparable接口实现类的对象在任何位置都可通过调用Arrays或集合的sort方法实现排序</li>
+<li>属于临时性的比较</li>
+</ul></li>
+</ol>
+<h2 id="五system类">五、System类</h2>
+<p>System类代表系统，系统级的很多属性和控制方法都放置在该类的内部。该类位于java.lang包。 由于该类的构造器是private的，所以无法创建该类的对象，也就是无法实例化该类。其内部的成员变量和成员方法都是static的，所以也可以很方便的进行调用。</p>
+<p>成员变量</p>
+<ul>
+<li>System类内部包含in、out和err三个成员变量，分别代表标准输入流(键盘输入)，标准输出流(显示器)和标准错误输出流(显示器)。</li>
+</ul>
+<p>成员方法</p>
+<ul>
+<li><p>native long currentTimeMillis()： 该方法的作用是返回当前的计算机时间，时间的表达格式为当前计算机时间和GMT时间(格林威治时间)1970年1月1号0时0分0秒所差的毫秒数。</p></li>
+<li><p>void exit(int status)： 该方法的作用是退出程序。其中status的值为0代表正常退出，非零代表异常退出。使用该方法可以在图形界面编程中实现程序的退出功能等。</p></li>
+<li><p>void gc()： 该方法的作用是请求系统进行垃圾回收。至于系统是否立刻回收，则取决于系统中垃圾回收算法的实现以及系统执行时的情况。</p></li>
+<li><p>String getProperty(String key)： 该方法的作用是获得系统中属性名为key的属性对应的值。系统中常见的属性名以及属性的作用如下表所示：</p>
+<figure>
+<img src="/2022/09/02/Coding/Java/09Java%E5%B8%B8%E7%94%A8%E7%B1%BB/72%20Day%20-%2002.png" alt="属性名及属性作用"><figcaption aria-hidden="true">属性名及属性作用</figcaption>
+</figure></li>
+</ul>
+<h2 id="六math类">六、Math类</h2>
+<p>java.lang.Math提供了一系列静态方法用于科学计算。其方法的参数和返回值类型一般为double型。</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">方法</th>
+<th style="text-align: left;">方法功能</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">abs</td>
+<td style="text-align: left;">绝对值</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">acos,asin,atan,cos,sin,tan</td>
+<td style="text-align: left;">三角函数</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">sqrt</td>
+<td style="text-align: left;">平方根</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">pow(double a,doble b)</td>
+<td style="text-align: left;">a的b次幂</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">log</td>
+<td style="text-align: left;">自然对数</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">exp</td>
+<td style="text-align: left;">e为底指数</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">max(double a,double b)</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">min(double a,double b)</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">random()</td>
+<td style="text-align: left;">返回0.0到1.0的随机数</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">long round(double a)</td>
+<td style="text-align: left;">double型数据a转换为long型（四舍五入）</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">toDegrees(double angrad)</td>
+<td style="text-align: left;">弧度—&gt;角度</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">toRadians(double angdeg)</td>
+<td style="text-align: left;">角度—&gt;弧度</td>
+</tr>
+</tbody>
+</table>
+<h2 id="七biginteger与bigdecimal">七、BigInteger与BigDecimal</h2>
+<h3 id="biginteger">BigInteger</h3>
+<ol type="1">
+<li><p>Integer类作为int的包装类，能存储的最大整型值为231-1，Long类也是有限的，最大为263-1。如果要表示再大的整数，不管是基本数据类型还是他们的包装类都无能为力，更不用说进行运算了。</p></li>
+<li><p>java.math包的BigInteger可以表示不可变的任意精度的整数。BigInteger 提供所有 Java 的基本整数操作符的对应物，并提供 java.lang.Math 的所有相关方法。另外，BigInteger 还提供以下运算：模算术、GCD 计算、质数测试、素数生成、位操作以及一些其他操作。</p></li>
+<li><p>构造器</p>
+<ul>
+<li>BigInteger(String val)：根据字符串构建BigInteger对象</li>
+</ul></li>
+<li><p>常用方法</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> BigInteger <span class="title">abs</span><span class="params">()</span>：返回此 BigInteger 的绝对值的 BigInteger。</span></span><br><span class="line"><span class="function">BigInteger <span class="title">add</span><span class="params">(BigInteger val)</span> ：返回其值为 <span class="params">(<span class="keyword">this</span> + val)</span> 的 BigInteger</span></span><br><span class="line"><span class="function">BigInteger <span class="title">subtract</span><span class="params">(BigInteger val)</span> ：返回其值为 <span class="params">(<span class="keyword">this</span> - val)</span> 的 BigInteger</span></span><br><span class="line"><span class="function">BigInteger <span class="title">multiply</span><span class="params">(BigInteger val)</span> ：返回其值为 <span class="params">(<span class="keyword">this</span> * val)</span> 的 BigInteger</span></span><br><span class="line"><span class="function">BigInteger <span class="title">divide</span><span class="params">(BigInteger val)</span> ：返回其值为 <span class="params">(<span class="keyword">this</span> / val)</span> 的 BigInteger。整数相除只保留整数部分。</span></span><br><span class="line"><span class="function">BigInteger <span class="title">remainder</span><span class="params">(BigInteger val)</span> ：返回其值为 <span class="params">(<span class="keyword">this</span> % val)</span> 的 BigInteger。</span></span><br><span class="line"><span class="function">BigInteger[] <span class="title">divideAndRemainder</span><span class="params">(BigInteger val)</span>：返回包含 <span class="params">(<span class="keyword">this</span> / val)</span> 后跟<span class="params">(<span class="keyword">this</span> % val)</span> 的两个 BigInteger 的数组。</span></span><br><span class="line"><span class="function">BigInteger <span class="title">pow</span><span class="params">(<span class="keyword">int</span> exponent)</span> ：返回其值为 <span class="params">(thisexponent)</span> 的 BigInteger。</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="bigdecimal">BigDecimal</h3>
+<ol type="1">
+<li><p>一般的Float类和Double类可以用来做科学计算或工程计算，但在商业计算中，要求数字精度比较高，故用到java.math.BigDecimal类。</p></li>
+<li><p>BigDecimal类支持不可变的、任意精度的有符号十进制定点数。</p></li>
+<li><p>构造器</p>
+<ul>
+<li>public BigDecimal(double val)</li>
+<li>public BigDecimal(String val)</li>
+</ul></li>
+<li><p>常用方法</p>
+<ul>
+<li>public BigDecimal add(BigDecimal augend)</li>
+<li>public BigDecimal subtract(BigDecimal subtrahend)</li>
+<li>public BigDecimal multiply(BigDecimal multiplicand)</li>
+<li>public BigDecimal divide(BigDecimal divisor, int scale, int roundingMode)</li>
+</ul></li>
+<li><p>例子</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testBigInteger</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    BigInteger bi = <span class="keyword">new</span> BigInteger(<span class="string">&quot;12433241123&quot;</span>);</span><br><span class="line">    BigDecimal bd = <span class="keyword">new</span> BigDecimal(<span class="string">&quot;12435.351&quot;</span>);</span><br><span class="line">    BigDecimal bd2 = <span class="keyword">new</span> BigDecimal(<span class="string">&quot;11&quot;</span>);</span><br><span class="line">    System.out.println(bi);</span><br><span class="line">    <span class="comment">// System.out.println(bd.divide(bd2));</span></span><br><span class="line">    System.out.println(bd.divide(bd2, BigDecimal.ROUND_HALF_UP));</span><br><span class="line">    System.out.println(bd.divide(bd2, <span class="number">15</span>, BigDecimal.ROUND_HALF_UP));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>P495</p>
+<h2 id="面试">面试</h2>
+<ol type="1">
+<li><p>String str1 = “abc”;与String str2 = new String(“abc”);的区别？</p></li>
+<li><p>String s = new String("abc");方式创建对象，在内存中创建了几个对象？</p>
+<ul>
+<li>两个：1个是堆空间中new结构；另一个是char[]对应的常量池中的数据。如果常量池中已经有了“abc”，则char[]数组只需指向该地址即可</li>
+</ul></li>
+<li><p>什么情况下，indexOf(str)和lastIndexOf(str)返回值相同</p>
+<ul>
+<li>存在唯一的str，或者不存在str</li>
+</ul></li>
+</ol>
+<h2 id="每日一考">每日一考</h2>
+<ol type="1">
+<li><p>画出如下几行代码的内存结构</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">String s1 = <span class="string">&quot;hello&quot;</span>;</span><br><span class="line">String s2 = <span class="string">&quot;hello&quot;</span>;</span><br><span class="line">String s3 = <span class="keyword">new</span> String(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line">s1 += <span class="string">&quot;world&quot;</span>;</span><br></pre></td></tr></table></figure></li>
+<li><p>如何理解String类的不可变性</p></li>
+<li><p>String类是否可以被继承？为什么？</p>
+<p>不可被继承，因为String类被声明为final</p></li>
+<li><p>String s = new String("hello");在内存中创建了几个对象？请说明</p>
+<p>两个：一个是堆中的String对象，还有一个是在字符串常量池中的hello数组</p></li>
+<li><p>String、StringBuffer、StringBuilder三者对比</p></li>
+<li><p>String的常用方法有哪些？（至少七个）</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">length() / charAt() / indexOf() / subString() / equals() / startsWith() / endsWith() / contains() / lastIndexOf() / getBytes() / toCharArray() / valueOf()</span><br></pre></td></tr></table></figure></li>
+<li><p>将字符串“2017-08-16”转换为对应的java.sql.Date类的对象（使用JDK8之前或JDK8中的API皆可）</p></li>
+<li><p>解释何为编码？解码？何为日期时间的格式化？解析？</p>
+<ul>
+<li>编码：将字符串转换为二进制数；解码：将二进制数据转化为字符串</li>
+<li>日期时间的格式化：日期转化为字符串；解析：字符串转换为日期</li>
+</ul></li>
+<li><p>自定义Person类如下，如何实现自然排序（按姓名从小到大排序）</p></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span> <span class="keyword">implements</span> <span class="title">Comparable</span></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> age;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compareTo</span><span class="params">(Object obj)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(obj instanceOf String)&#123;</span><br><span class="line">            </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="10" type="1">
+<li><p>提供定制排序涉及到的接口的实现类对象，并按Person类的年龄从大到小排序</p></li>
+<li><p>JDK8之前和JDK8中日期、时间相关的类分别有哪些？</p></li>
+</ol>
+]]></content>
+      <categories>
+        <category>程序设计</category>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>笔记</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>第8章 多线程</title>
+    <url>/2022/09/02/Coding/Java/08%E5%A4%9A%E7%BA%BF%E7%A8%8B/</url>
+    <content><![CDATA[<h1 id="第8章多线程">第8章、多线程</h1>
+<h2 id="目录">目录</h2>
+<ol type="1">
+<li>一、基本概念：程序、进程、线程</li>
+<li>二、线程的创建和使用（重点，JDK5.0 前 2 种创建多线程方式）</li>
+<li>三、线程的生命周期</li>
+<li>四、线程的同步（重难点，3 种方法解决线程安全问题）</li>
+<li>五、线程的通信</li>
+<li>六、JDK5.0 新增的 2 种线程创建方式</li>
+<li>面试</li>
+<li>每日一考</li>
+<li>创建多线程有哪些方式：4 种</li>
+</ol>
+<span id="more"></span>
+<h2 id="一基本概念程序进程线程">一、基本概念：程序、进程、线程</h2>
+<ol type="1">
+<li><strong>程序(program)</strong>是为完成特定任务、用某种语言编写的一组指令的集合。即指一段<strong>静态的代码</strong>，<strong>静态对象</strong></li>
+<li><strong>进程(process)</strong>是程序的一次执行过程，或是<strong>正在运行的一个程序</strong>。是一个<strong>动态</strong>的过程：有它自身的产生、存在和消亡的过程。——生命周期
+<ul>
+<li>如：运行中的QQ，运行中的MP3播放器</li>
+<li>程序是静态的，进程是动态的</li>
+<li>进程作为资源分配的单位，系统在运行时会为每个进程分配不同的内存区域</li>
+</ul></li>
+<li><strong>线程(thread)</strong>，进程可进一步细化为线程，是一个程序内部的一条执行路径。
+<ul>
+<li>若一个进程同一时间并行执行多个线程，就是支持多线程的</li>
+<li><strong>线程作为调度和执行的单位，每个线程拥有独立的运行栈和程序计数器(pc)</strong>，线程切换的开销小</li>
+<li><strong>一个进程中的多个线程共享相同的内存单元/内存地址空间 --&gt; 它们从同一堆中分配对象，可以访问相同的变量和对象</strong>。这就使得线程间通信更简便、高效。但多个线程操作共享的系统资源可能就会带来安全的隐患。</li>
+</ul></li>
+</ol>
+<h3 id="单核cpu和多核cpu">单核CPU和多核CPU</h3>
+<ol type="1">
+<li>单核CPU，其实是一种假的多线程，因为在一个时间单元内，也只能执行一个线程的任务。例如：虽然有多车道，但是收费站只有一个工作人员在收费，只有收了费才能通过，那么CPU就好比收费人员。如果有某个人不想交钱，那么收费人员可以把他“挂起”（晾着他，等他想通了，准备好了钱，再去收费）。但是因为CPU时间单元特别短，因此感觉不出来。</li>
+<li>如果是多核的话，才能更好的发挥多线程的效率。（现在的服务器都是多核的）</li>
+<li>一个Java应用程序java.exe，其实<strong>至少有三个线程</strong>：main()主线程，gc()垃圾回收线程，异常处理线程。当然如果发生异常，会影响主线程。</li>
+</ol>
+<h3 id="并行和并发">并行和并发</h3>
+<ol type="1">
+<li>并行：多个CPU同时执行多个任务。比如：多个人同时做不同的事。</li>
+<li>并发：一个CPU(采用时间片)“同时”执行多个任务。比如：秒杀、多个人做同一件事（多个线程同作一件事）</li>
+</ol>
+<h3 id="使用多线程的优点">使用多线程的优点</h3>
+<p>背景：以<strong>单核</strong>CPU为例，只使用单个线程先后完成多个任务（调用多个方法），肯定比用多个线程来完成用的时间更短（cpu需要切换时间），为何仍需多线程呢？</p>
+<p>多线程程序优点：</p>
+<ol type="1">
+<li>提高应用程序的响应。对图形化界面更有意义，可增强用户体验。</li>
+<li>提高计算机系统CPU的利用率</li>
+<li>改善程序结构。将既长又复杂的进程分为多个线程，独立运行，利于理解和修改</li>
+</ol>
+<h3 id="何时需要多线程">何时需要多线程</h3>
+<ol type="1">
+<li>程序需要同时执行两个或多个任务。</li>
+<li>程序需要实现一些需要等待的任务时，如用户输入、文件读写操作、网络操作、搜索等。</li>
+<li>需要一些后台运行的程序时</li>
+</ol>
+<h2 id="二线程的创建和使用重点jdk5.0前2种创建多线程方式">二、线程的创建和使用（重点，JDK5.0前2种创建多线程方式）</h2>
+<h3 id="多线程的创建方式一继承于thread类存在线程安全问题">多线程的创建，方式一：继承于Thread类（存在线程安全问题）</h3>
+<ol type="1">
+<li>创建一个继承于Thread类的子类</li>
+<li>重写Thread类的run()，将此线程执行的操作声明在run()方法中</li>
+<li>创建Thread类子类对象</li>
+<li>调用子类对象的start()方法:
+<ul>
+<li>启动当前线程</li>
+<li>调用当前线程的run()方法</li>
+</ul></li>
+</ol>
+<p>问题一：不能通过直接调用对象的run()方法的方式启动线程</p>
+<p>问题二：不可以让已经start()的线程去执行。会报IllegalThreadStateException。需要重新创建一个线程的对象</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ThreadTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 3. 创建Thread类子类对象</span></span><br><span class="line">        <span class="comment">// 4. 调用子类对象的start()方法</span></span><br><span class="line">        <span class="keyword">new</span> MyThread().start();</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 如下操作仍在main线程中进行</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(i % <span class="number">2</span> == <span class="number">0</span>)&#123;</span><br><span class="line">                System.out.println(i + <span class="string">&quot;...&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 匿名子类的匿名对象</span></span><br><span class="line">        <span class="keyword">new</span> Thread()&#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++)&#123;</span><br><span class="line">                    <span class="keyword">if</span>(i % <span class="number">2</span> == <span class="number">0</span>)&#123;</span><br><span class="line">                        System.out.println(Thread.currentThread().getName() + <span class="string">&quot;:&quot;</span> + i);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;.start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 1. 创建一个继承于Thread类的子类</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyThread</span> <span class="keyword">extends</span> <span class="title">Thread</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 2. 重写Thread类的run()</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(i % <span class="number">2</span> == <span class="number">0</span>)&#123;</span><br><span class="line">                System.out.println(Thread.currentThread().getName() + <span class="string">&quot;:&quot;</span> + i);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="thread类的常用方法">Thread类的常用方法</h3>
+<ol type="1">
+<li>start(): 启动当前线程；调用当前线程的run方法</li>
+<li>run(): 通常需要重写Thread类中的此方法，将创建的线程要执行的操作声明在此方法中</li>
+<li>currentThread(): 静态方法，返回执行当前代码的线程</li>
+<li>getName(): 获取当前线程的名字</li>
+<li>setName(): 设置当前线程的名字</li>
+<li>yield(): 静态方法，释放当前cpu的执行权</li>
+<li>join(): 在线程A中调用线程B的join方法，此时线程a进入阻塞状态，直到线程B完全执行完后，线程A才结束阻塞状态</li>
+<li>stop(): 已过时；当执行此方法时，强制结束当前线程</li>
+<li>sleep(long millis): 让当前线程睡眠指定的millis毫秒。载指定的millis毫秒时间内，当前线程是阻塞状态</li>
+<li>isAlive(): 判断当前线程是否存活</li>
+</ol>
+<h3 id="线程的调度">线程的调度</h3>
+<ol type="1">
+<li>调度策略
+<ul>
+<li>时间片</li>
+<li>抢占式：高优先级线程抢占CPU</li>
+</ul></li>
+<li>Java的调度方法
+<ul>
+<li>同优先级线程组成先进先出队列，使用时间片策略</li>
+<li>高优先级使用优先调度的抢占式策略</li>
+</ul></li>
+</ol>
+<h3 id="线程的优先级">线程的优先级</h3>
+<ol type="1">
+<li>线程的优先等级
+<ul>
+<li>MAX_PRIORITY：10</li>
+<li>MIN _PRIORITY：1</li>
+<li>NORM_PRIORITY：5；线程的默认优先级</li>
+</ul></li>
+<li>线程优先级方法
+<ul>
+<li>getPriority() ：返回线程优先值</li>
+<li>setPriority(int newPriority) ：改变线程的优先级</li>
+</ul></li>
+<li>高优先级的线程要抢占低优先级线程的CPU执行权。但只是从概率上讲，高优先级的线程高概率的情况下先被执行。并不意味着只有当高优先级的线程执行完后，低优先级的线程才执行。</li>
+</ol>
+<h3 id="创建多线程的方式二实现runnable接口存在线程安全问题">创建多线程的方式二：实现Runnable接口（存在线程安全问题）</h3>
+<ol type="1">
+<li>创建一个实现了Runnable接口的类</li>
+<li>实现类去实现Runnable中的抽象方法：run()</li>
+<li>创建实现类的对象</li>
+<li>将此对象作为参数传递到Thread类的构造器中，创建Thread类对象</li>
+<li>通过Thread类的对象调用strat()：①启动线程；②调用当前线程的run()方法 --&gt; Java源码内，传入Thread的构造器的实参传给了 Runnable类型的target，实际上调用的target的run()方法</li>
+</ol>
+<h3 id="创建多线程的2种方式区别">创建多线程的2种方式区别</h3>
+<ol type="1">
+<li><p>开发中优先选择实现Runnable接口的方式</p>
+<ul>
+<li>实现的方式没有类的单继承性的局限性</li>
+<li>实现的方式更适合来处理多个线程有共享数据的形式</li>
+</ul></li>
+<li><p>联系</p>
+<ul>
+<li><p>Thread也实现了Runnable接口</p></li>
+<li><p>两种方式都需要重写run()，将线程执行的逻辑声明在run()中</p></li>
+</ul></li>
+</ol>
+<h3 id="补充线程的分类">补充：线程的分类</h3>
+<p>Java中的线程分为两类：一种是守护线程，一种是用户线程。</p>
+<ul>
+<li>用户线程在的时候，守护线程用来服务用户线程</li>
+<li>通过在start()方法前调用thread.setDaemon(true)可以把一个用户线程变成一个守护线程</li>
+<li>当用户线程退出后，守护线程也将退出；java垃圾回收就是一个典型的守护线程</li>
+<li>若JVM中都是守护线程，当前JVM将退出</li>
+</ul>
+<h2 id="三线程的生命周期">三、线程的生命周期</h2>
+<p>线程的完整生命周期通常要经历如下五个状态：</p>
+<ol type="1">
+<li>新建： 当一个Thread类或其子类的对象被声明并创建时，新生的线程对象处于新建状态</li>
+<li>就绪：处于新建状态的线程<strong>被start()后</strong>，将进入线程队列等待CPU时间片，此时它已具备了运行的条件，只是没分配到CPU资源</li>
+<li>运行：当<strong>就绪的线程被调度并获得CPU资源时,便进入运行状态</strong>， run()方法定义了线程的操作和功能0阻塞：在某种特殊情况下，被人为挂起或执行输入输出操作时，让出 CPU 并临时中止自己的执行，进入阻塞状态</li>
+<li>死亡：线程完成了它的全部工作或线程被提前强制性地中止或出现异常导致结束</li>
+</ol>
+<figure>
+<img src="/2022/09/02/Coding/Java/08%E5%A4%9A%E7%BA%BF%E7%A8%8B/69%20Day%20-%2002.png" alt="生命周期"><figcaption aria-hidden="true">生命周期</figcaption>
+</figure>
+<p>说明</p>
+<ol type="1">
+<li>生命周期关注的两个概念：状态、相应的方法</li>
+<li>关注
+<ul>
+<li>从状态a到状态b哪些方法执行了（回调方法）</li>
+<li>通过手动调用那些方法实现从状态a到状态b</li>
+</ul></li>
+<li>阻塞是临时状态，不可做为最终状态。</li>
+</ol>
+<h2 id="四线程的同步重难点3种方法解决线程安全问题">四、线程的同步（重难点，3种方法解决线程安全问题）</h2>
+<p>安全问题:</p>
+<ul>
+<li>多个线程执行的不确定性引起执行结果的不稳定</li>
+<li>多个线程对数据的共享，会造成操作的不完整性，会破坏数据。</li>
+</ul>
+<p>解决方法：Java中通过同步机制，来解决线程的安全问题</p>
+<p>同步的方式，解决了线程的安全问题 -- 好处</p>
+<p>操作同步代码时，只能有一个线程参与，其他线程等待。相当于一个单线程的过程，效率低 -- 局限性</p>
+<h3 id="方式一同步代码块synchronized">方式一：同步代码块（synchronized）</h3>
+<ol type="1">
+<li><p>格式</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">synchronized</span>(同步监视器)&#123;</span><br><span class="line">    <span class="comment">// 需要被同步的代码</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>说明</p>
+<ul>
+<li><p>操作<strong>共享数据</strong>的代码即为需要被同步的代码；多个线程共同操作的变量即为共享数据。同步代码块不能包少了，也不能包多了（逻辑会出问题）</p></li>
+<li><p><strong>同步监视器</strong>（俗称 锁）任何一个类的对象都可充当锁。</p>
+<ul>
+<li><p>要求多个线程共用同一把锁，即同一个对象</p></li>
+<li><p>实现Runnable接口的类中，可直接创建一个新的任意类的对象作为同步监视器，或直接使用this</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyThread2</span> <span class="keyword">implements</span> <span class="title">Runnable</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 同步代码块</span></span><br><span class="line">        <span class="keyword">synchronized</span> (<span class="keyword">this</span>)&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++)&#123;</span><br><span class="line">                System.out.println(Thread.currentThread().getName() + <span class="string">&quot;: &quot;</span> + i);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>继承Thread类的子类中，需创建一个static对象作为同步监视器，或直接使用“当前类.class"，即类也是一个对象</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyThread1</span> <span class="keyword">extends</span> <span class="title">Thread</span></span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">synchronized</span>(MyThread1.class)&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++)&#123;</span><br><span class="line">                System.out.println(getName() + <span class="string">&quot;: &quot;</span> + i);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul></li>
+</ul></li>
+</ol>
+<h3 id="方式二同步方法synchronized">方式二：同步方法（synchronized）</h3>
+<p>如果操作共享数据的代码完整的声明在一个方法中，不妨将此方法声明为同步的</p>
+<p>总结:</p>
+<ol type="1">
+<li><p>同步方法仍然涉及到同步监视器，只是不需要我们显式声明</p></li>
+<li><p>非静态的同步方法，同步监视器为this；静态同步方法的同步监视器为当前类本身</p>
+<ul>
+<li><p>实现Runnable接口的类中，可直接抽出部分代码作为方法，并将此方法声明为synchronized、在run()方法体中调用</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyThread2</span> <span class="keyword">implements</span> <span class="title">Runnable</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            show();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">show</span><span class="params">()</span></span>&#123; <span class="comment">// 同步方法中的同步监视器：this</span></span><br><span class="line">        <span class="keyword">if</span>(i &lt; <span class="number">100</span>) &#123;</span><br><span class="line">            System.out.println(Thread.currentThread().getName() + <span class="string">&quot;:&quot;</span> + i);</span><br><span class="line">            i++;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>继承Thread类的子类中，抽出部分代码作为方法，并将此方法声明为synchronized，但需同时将此方法声明为static，此时使用的同步监视器为“当前类.class"，即类也是一个对象</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyThread1</span> <span class="keyword">extends</span> <span class="title">Thread</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; <span class="number">100</span>; j++)&#123;</span><br><span class="line">            show();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">show</span><span class="params">()</span></span>&#123; <span class="comment">// 同步监视器：MyThread1.class</span></span><br><span class="line">        <span class="comment">// private synchronized void show()&#123; // 同步监视器：this，指当前对象，所以锁不唯一</span></span><br><span class="line">        <span class="keyword">if</span>(i &lt; <span class="number">100</span>) &#123;</span><br><span class="line">            System.out.println(Thread.currentThread().getName() + <span class="string">&quot;:&quot;</span> + i);</span><br><span class="line">            i++;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul></li>
+</ol>
+<h3 id="单例模式之懒汉式-安全问题解决">单例模式之懒汉式 安全问题解决</h3>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Bank</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Bank</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Bank instance = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">synchronized</span> Bank <span class="title">getInstance</span><span class="params">()</span></span>&#123; <span class="comment">// 同步方法</span></span><br><span class="line">        <span class="keyword">if</span>(instance == <span class="keyword">null</span>)&#123;</span><br><span class="line">            instance = <span class="keyword">new</span> Bank();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> instance;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Bank <span class="title">getInstance2</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">// 懒汉式同步代码块实现方式一: 效率稍差</span></span><br><span class="line">        <span class="keyword">synchronized</span> (Bank.class) &#123; <span class="comment">// 同步代码块</span></span><br><span class="line">            <span class="keyword">if</span>(instance == <span class="keyword">null</span>)&#123;</span><br><span class="line">                instance = <span class="keyword">new</span> Bank();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> instance;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 懒汉式同步代码块实现方式二【Double-checked locking 】: 效率较高</span></span><br><span class="line">        <span class="comment">// 原因：当同时来的多个线程取对象时，仍然相当于单线程判断和执行</span></span><br><span class="line">        <span class="comment">//      但当后面再来多个线程取对象时，直接return走了，无需进入单线程判断和执行</span></span><br><span class="line">        <span class="keyword">if</span>(instance == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (Bank.class) &#123; <span class="comment">// 同步代码块</span></span><br><span class="line">                <span class="keyword">if</span> (instance == <span class="keyword">null</span>) &#123;</span><br><span class="line">                    instance = <span class="keyword">new</span> Bank();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> instance;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="死锁问题">死锁问题</h3>
+<ol type="1">
+<li>死锁的理解：不同的线程分别占用对方需要的同步资源不放弃，都在等待对方放弃自己需要的同步资源，就形成了线程的死锁</li>
+<li>说明
+<ul>
+<li>出现死锁后，不会出现异常，不会出现提示，只是所有的线程都处于阻塞状态，无法继续</li>
+<li>使用同步时，要避免出现死锁</li>
+</ul></li>
+</ol>
+<h3 id="方式三lock锁-----jdk5.0新增">方式三：Lock锁 --- JDK5.0新增</h3>
+<ol type="1">
+<li>实例化ReentrantLock( 需保证多个线程的lock对象是相同的 )</li>
+<li>调用上锁方法：lock()</li>
+<li>调用解锁方法：unlock()</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Window</span> <span class="keyword">implements</span> <span class="title">Runnable</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> ticket = <span class="number">100</span>;</span><br><span class="line">    <span class="comment">// 1. 实例化</span></span><br><span class="line">    <span class="keyword">private</span> ReentrantLock lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>)&#123;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">try</span>&#123;</span><br><span class="line">                <span class="comment">// 2. 调用上锁方法 lock</span></span><br><span class="line">                lock.lock();</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span>(ticket &gt; <span class="number">0</span>)&#123;</span><br><span class="line">                    System.out.println(Thread.currentThread().getName() + <span class="string">&quot;: ID - &quot;</span> + ticket);</span><br><span class="line">                    ticket--;</span><br><span class="line">                &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                <span class="comment">// 3. 调用解锁方法 unlock</span></span><br><span class="line">                lock.unlock();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>优先使用顺序</strong></p>
+<ul>
+<li>Lock - 同步代码块 - 同步方法</li>
+</ul>
+<h3 id="小结释放锁的操作">小结：释放锁的操作</h3>
+<ol type="1">
+<li>当前线程的同步方法、同步代码块执行结束。</li>
+<li>当前线程在同步代码块、同步方法中遇到break、return终止了该代码块、该方法的继续执行。</li>
+<li>当前线程在同步代码块、同步方法中出现了未处理的Error或Exception，导致异常结束。</li>
+<li>当前线程在同步代码块、同步方法中执行了线程对象的wait()方法，当前线程暂停，并释放锁。</li>
+</ol>
+<h3 id="小结不释放锁的操作">小结：不释放锁的操作</h3>
+<ol type="1">
+<li>线程执行同步代码块或同步方法时，程序调用Thread.sleep()、 Thread.yield()方法暂停当前线程的执行</li>
+<li>线程执行同步代码块时，其他线程调用了该线程的suspend()方法将该线程挂起，该线程不会释放锁（同步监视器）。
+<ul>
+<li>应尽量避免使用suspend()和resume()来控制线程</li>
+</ul></li>
+</ol>
+<h2 id="五线程的通信">五、线程的通信</h2>
+<h3 id="涉及到的三个方法">涉及到的三个方法</h3>
+<ol type="1">
+<li>wait(): 一旦执行此方法，当前线程就进入阻塞状态，并释放同步监视器</li>
+<li>notify(): 一旦执行此方法，就会唤醒被wait()的一个线程。如果多个线程被wait()，就唤醒优先级高的线程</li>
+<li>notifyAll(): 一旦执行此方法，就会唤醒所以被wait()的线程</li>
+</ol>
+<h3 id="说明">说明</h3>
+<ol type="1">
+<li>wait()、notify()、notifyAll()都必须使用在同步代码块或同步方法中</li>
+<li>wait()、notify()、notifyAll()的<strong>调用者必须是同步代码块或同步方法中的同步监视器，否则会出现IllegalMonitorStateException异常</strong></li>
+<li>wait()、notify()、notifyAll()三个方法定义在java.lang.Object类中</li>
+</ol>
+<h3 id="经典问题生产者消费者问题">经典问题（生产者/消费者问题）</h3>
+<p>生产者(Productor)将产品交给店员(Clerk)，而消费者(Customer)从店员处取走产品，店员一次只能持有固定数量的产品(比如:20），如果生产者试图生产更多的产品，店员会叫生产者停一下，如果店中有空位放产品了再通知生产者继续生产；如果店中没有产品了，店员会告诉消费者等一下，如果店中有产品了再通知消费者来取走产品。</p>
+<p>这里可能出现两个问题：</p>
+<ul>
+<li>生产者比消费者快时，消费者会漏掉一些数据没有取到。</li>
+<li>消费者比生产者快时，消费者会取相同的数据。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 共享数据：店员 / 产品数量</span></span><br><span class="line"><span class="comment">// 涉及线程安全问题：3种同步机制</span></span><br><span class="line"><span class="comment">// 涉及线程通信</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ProductTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Clerk clerk = <span class="keyword">new</span> Clerk();</span><br><span class="line"></span><br><span class="line">        Producer producer = <span class="keyword">new</span> Producer(clerk);</span><br><span class="line">        producer.setName(<span class="string">&quot;生产者1&quot;</span>);</span><br><span class="line"></span><br><span class="line">        Customer customer = <span class="keyword">new</span> Customer(clerk);</span><br><span class="line">        customer.setName(<span class="string">&quot;消费者1&quot;</span>);</span><br><span class="line"></span><br><span class="line">        producer.start();</span><br><span class="line">        customer.start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Clerk</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> productNum = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">produceProduct</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (productNum &lt; <span class="number">20</span>) &#123;</span><br><span class="line">            productNum++;</span><br><span class="line">            System.out.println(Thread.currentThread().getName() + <span class="string">&quot;: 正在生产第&quot;</span> + productNum + <span class="string">&quot;个产品&quot;</span>);</span><br><span class="line"></span><br><span class="line">            notify();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                wait();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">consumeProduct</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (productNum &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            System.out.println(Thread.currentThread().getName() + <span class="string">&quot;: 正在购买第&quot;</span> + productNum + <span class="string">&quot;个产品&quot;</span>);</span><br><span class="line">            productNum--;</span><br><span class="line"></span><br><span class="line">            notify();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                wait();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Producer</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Clerk clerk;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Producer</span><span class="params">(Clerk clerk)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.clerk = clerk;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>)&#123;</span><br><span class="line">            clerk.produceProduct();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                sleep(<span class="number">10</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Customer</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Clerk clerk;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Customer</span><span class="params">(Clerk clerk)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.clerk = clerk;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            clerk.consumeProduct();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                sleep(<span class="number">10</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="六jdk5.0新增的2种线程创建方式">六、JDK5.0新增的2种线程创建方式</h2>
+<h3 id="创建线程方式三jdk5.0新增方式一实现callable接口">创建线程方式三（JDK5.0新增方式一）：实现Callable接口</h3>
+<ol type="1">
+<li><p>与使用Runnable相比， Callable功能更强大些</p>
+<ul>
+<li>相比run()方法，Call()方法可以有返回值</li>
+<li>Call()方法可以抛出异常，被外面的操作捕获，获取异常信息</li>
+<li>Callable支持泛型，Call()支持泛型的返回值</li>
+<li>需要借助FutureTask类，比如获取返回结果</li>
+</ul></li>
+<li><p>过程</p>
+<ul>
+<li>创建一个实现Callable的实现类</li>
+<li>实现类中实现Call方法，将此线程需要执行的操作声明在Call方法中</li>
+<li>创建Callable实现类的对象</li>
+<li>将实现类对象作为参数传递到FutureTask构造器中，创建FutureTask的对象</li>
+<li>将FutureTask的对象作为参数传递到Thread的构造器中，创建Thread对象，并调用start()方法</li>
+<li>获取Callable中Call方法中的返回值，FutureTask对象的get()方法返回值即为FutureTask构造器参数Callable实现类重写的Call()的返回值</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CallableTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        NumThread numThread = <span class="keyword">new</span> NumThread();</span><br><span class="line">        FutureTask futureTask = <span class="keyword">new</span> FutureTask(numThread);</span><br><span class="line">        Thread thread = <span class="keyword">new</span> Thread(futureTask);</span><br><span class="line">        thread.start();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Object sum = futureTask.get();</span><br><span class="line">            System.out.println(sum);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (ExecutionException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NumThread</span> <span class="keyword">implements</span> <span class="title">Callable</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">call</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> sum = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++)&#123;</span><br><span class="line">            sum += i;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> sum;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="创建线程方式四jdk5.0新增方式二开发常用线程池">创建线程方式四（JDK5.0新增方式二，开发常用）：线程池</h3>
+<p><strong>背景</strong>：经常创建和销毁、使用量特别大的资源，比如并发情况下的线程，对性能影响很大。 <strong>思路</strong>：提前创建好多个线程，放入线程池中，使用时直接获取，使用完放回池中。<strong>可以避免频繁创建销毁、实现重复利用</strong>。类似生活中的公共交通工具。</p>
+<p><strong>好处</strong>：</p>
+<ul>
+<li>提高响应速度（减少了创建新线程的时间）</li>
+<li>降低资源消耗（重复利用线程池中线程，不需要每次都创建）</li>
+<li>便于线程管理（多于数据库可连接总数时，不再提供连接）
+<ul>
+<li>corePoolSize：核心池的大小</li>
+<li>maximumPoolSize：最大线程数</li>
+<li>keepAliveTime：线程没有任务时最多保持多长时间后会终止</li>
+<li>…</li>
+</ul></li>
+</ul>
+<h2 id="面试">面试</h2>
+<ol type="1">
+<li>synchronized 与 Lock 的异同
+<ul>
+<li>相同点：两者都可解决线程的安全问题</li>
+<li>不同点：
+<ul>
+<li>synchronized机制在执行完相应的同步代码块后，自动释放同步监视器</li>
+<li>Lock需要手动启动同步lock()，同时结束同步也需要手动的实现unlock()</li>
+</ul></li>
+</ul></li>
+<li>sleep()方法和wait()方法的异同？（重点）
+<ul>
+<li>相同点：执行后都可使当前线程进入阻塞状态</li>
+<li>不同点：
+<ul>
+<li>两方法声明位置不同：Thread类中声明sleep()，Object类中声明wait()</li>
+<li>调用要求不同：sleep()可在需要的场景下调用；wait()必须使用在同步代码块或同步方法中</li>
+<li>关于释放同步监视器：如两方法都使用在同步方法或同步代码块中，sleep()不会释放同步监视器，wait()会释放同步监视器</li>
+</ul></li>
+</ul></li>
+<li>创建多线程有几种方式？
+<ul>
+<li>四种：
+<ul>
+<li>继承Thread类并重写run方法，在main中创建对象并调用start()方法</li>
+<li>实现Runnable接口方式，实现接口run方法，在main中创建实现类对象，并将该对象作为参数传给Thread构造函数，通过Thread对象调用start()方法</li>
+<li>实现Callable接口方式，实现Call方法，在main中创建实现类对象，将该对象作为参数传给FutureTask构造函数，将FutureTask对象作为参数传给Thread构造函数，通过Thread对象调用start()方法</li>
+<li>使用线程池方式，响应速度提高、提高了资源重用率，便于管理</li>
+</ul></li>
+</ul></li>
+<li>如何解决线程安全问题，有几种方式，对比几种方式的不同点</li>
+</ol>
+<h2 id="每日一考">每日一考</h2>
+<ol type="1">
+<li><p>谈谈你对程序、进程、线程的理解</p>
+<ul>
+<li>程序是静态的代码</li>
+<li>进程是正在运行的程序，动态的</li>
+<li>线程：进程可以细分为线程，线程是一个程序内部的一条执行路径</li>
+</ul></li>
+<li><p>代码完成继承Thread的方式创建分线程，并遍历100以内的自然数</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ThreadMethod</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        MyThread1 t1 = <span class="keyword">new</span> MyThread1();</span><br><span class="line">        t1.setName(<span class="string">&quot;Extends Thread 线程&quot;</span>);</span><br><span class="line">        t1.start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyThread1</span> <span class="keyword">extends</span> <span class="title">Thread</span></span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++)&#123;</span><br><span class="line">            System.out.println(getName() + <span class="string">&quot;: &quot;</span> + i);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>代码完成实现Runnable接口的方法创建分线程，并遍历100以内的自然数</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ThreadMethod</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        MyThread2 t2 = <span class="keyword">new</span> MyThread2();</span><br><span class="line">        Thread t = <span class="keyword">new</span> Thread(t2);</span><br><span class="line"></span><br><span class="line">        t.setName(<span class="string">&quot;implements Runnable 线程&quot;</span>);</span><br><span class="line">        t.start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyThread2</span> <span class="keyword">implements</span> <span class="title">Runnable</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++)&#123;</span><br><span class="line">            System.out.println(Thread.currentThread().getName() + <span class="string">&quot;: &quot;</span> + i);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>对比两种创建方式</p></li>
+<li><p>说说你对IDEA中Project和Module的理解</p>
+<ul>
+<li>一个项目Project由多个相互联系的模块Module组成</li>
+</ul></li>
+<li><p>画图说明线程的生命周期，以及各状态切换使用到的方法等</p>
+<ul>
+<li>创建、就绪、运行、阻塞、死亡</li>
+<li></li>
+</ul></li>
+<li><p>同步代码块中涉及到同步监视器和共享数据，谈谈你对同步监视器和共享数据的理解，以及注意点</p>
+<ul>
+<li>同步监视器是什么，
+<ul>
+<li>需要同步的代码的同步监视器需要是同一个对象</li>
+<li>非静态同步方法的同步监视器是this，静态方法的同步监视器是当前类本身</li>
+</ul></li>
+<li>共享数据是多个线程共同操作的数据，
+<ul>
+<li>操作共享数据代码不能包多了，也不能包少了</li>
+</ul></li>
+</ul></li>
+<li><p>sleep()和wait()的区别</p>
+<ul>
+<li>声明的位置不同：</li>
+<li>调用者不同</li>
+<li>调用的位置不同</li>
+<li>释放锁情况不同</li>
+</ul></li>
+<li><p>写一个线程安全的懒汉式</p></li>
+<li><p>创建多线程有哪些方式：4种</p></li>
+</ol>
+]]></content>
+      <categories>
+        <category>程序设计</category>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>笔记</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>第7章 异常处理</title>
     <url>/2022/09/02/Coding/Java/07%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/</url>
     <content><![CDATA[<h1 id="第7章异常处理">第7章、异常处理</h1>
