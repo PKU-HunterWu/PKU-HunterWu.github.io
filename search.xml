@@ -1,6 +1,387 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>第6章 面向对象编程-下</title>
+    <url>/2022/09/02/Coding/Java/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%BC%96%E7%A8%8B%E4%B8%8B/</url>
+    <content><![CDATA[<h1 id="第6章面向对象编程-下">第6章、面向对象编程-下</h1>
+<h2 id="目录">目录</h2>
+<ol type="1">
+<li>一、关键字：static</li>
+<li>单例（Singleton）设计模式【掌握，可能在笔试时手写】</li>
+<li>二、理解 main 方法的语法</li>
+<li>三、类的成员之四：代码块（或初始化块）</li>
+<li>四、关键字：final</li>
+<li>五、抽象类与抽象方法【少数认为归为特征（封装、继承、多态、抽象），一般归为关键字：abstract】</li>
+<li>六、接口（interface）【关键字的使用】</li>
+<li>七、类的成员之五：内部类（自己写比较少，但源码中会出现）</li>
+<li>面试题</li>
+<li>每日一考</li>
+<li>声明抽象类，并包含抽象方法，测试类中创建一个继承抽象类的匿名子类对象</li>
+</ol>
+<h2 id="一关键字static">一、关键字：static</h2>
+<ol type="1">
+<li>static：静态的</li>
+<li>static可用来修饰：属性、方法、代码块、内部类</li>
+<li>使用static修饰属性：<strong>静态变量（或类变量）</strong>
+<ul>
+<li><p>属性：按是否使用static修饰，又分为静态属性 vs 非静态属性（实例变量）</p>
+<ul>
+<li>实例变量：创建类的多个对象，每个对象都<strong>独立的</strong>拥有一套类中的非静态属性。当修改其中一个对象中的非静态属性时，不会导致其他对象中同样的属性值的修改</li>
+<li>静态变量：创建类的多个对象，多个对象<strong>共享</strong>同一个静态变量，当通过某一个对象修改静态变量时，会导致其他对象调用此静态变量时，是修改过了的。</li>
+</ul></li>
+<li><p>static修饰属性的其他说明</p>
+<ul>
+<li>静态变量随着类的加载而加载，可通过“类.静态变量”的方式进行调用</li>
+<li>静态变量加载要早于对象的创建</li>
+<li>由于类只会加载一次，则静态变量也只会存在一份，存在方法区的静态域中</li>
+</ul></li>
+<li><p>静态属性举例</p>
+<ul>
+<li>System.out</li>
+<li>Math.PI</li>
+</ul></li>
+<li><p>类变量 vs 实例变量的内存解析</p>
+<figure>
+<img src="/2022/09/02/Coding/Java/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%BC%96%E7%A8%8B%E4%B8%8B/类变量和实例变量内存解析.png" alt="类变量和实例变量内存解析"><figcaption aria-hidden="true">类变量和实例变量内存解析</figcaption>
+</figure></li>
+</ul></li>
+<li>使用static修饰方法：<strong>静态方法</strong>
+<ul>
+<li>随着类的加载而加载，可通过“类.静态方法”的方式调用</li>
+<li>静态方法中只能调用静态的方法或属性。非静态方法中即可调用非静态的方法和属性、也可调用静态的方法和属性</li>
+</ul></li>
+<li>static注意点
+<ul>
+<li>静态方法中，不能使用this关键字和super关键字（this和super都是基于有当前对象才可调用的）<strong>？super调用父类中的static结构也不可</strong></li>
+<li>静态属性和静态方法的使用，可从生命周期的角度分析</li>
+</ul></li>
+<li>开发中，如何确定一个属性是否要声明为static的？
+<ul>
+<li>属性可被多个对象所共享，不会随对象的不同而不同时</li>
+<li>类中的常量也通常声明为static</li>
+</ul></li>
+<li>开发中，如何确定一个方法是否要声明为static的？
+<ul>
+<li>操作静态属性的方法通常设置为static的</li>
+<li>工具类中的方法，习惯上声明为static的，如Math、Arrays、Collections</li>
+</ul></li>
+</ol>
+<h3 id="单例singleton设计模式掌握可能在笔试时手写">单例（Singleton）设计模式【掌握，可能在笔试时手写】</h3>
+<ol type="1">
+<li>设计模式 定义
+<ul>
+<li>设计模式是在大量的实践中总结和理论化之后优选的代码结构、编程风格、以及解决问题的思考方式。设计模免去我们自己再思考和摸索。就像是经典的棋谱，不同的棋局，我们用不同的棋谱。”套路”</li>
+</ul></li>
+<li>单例设计模式 定义
+<ul>
+<li>所谓类的单例设计模式，就是采取一定的方法保证在整个的软件系统中，对某个类只能存在一个对象实例，并且该类只提供一个取得其对象实例的方法。</li>
+<li>如果我们要让类在一个虚拟机中只能产生一个对象，我们首先必须将类的构造器的访问权限设置为private，这样，就不能用new操作符在类的外部产生类的对象了，但在类内部仍可以产生该类的对象。</li>
+<li>因为在类的外部开始还无法得到类的对象，只能调用该类的某个静态方法以返回类内部创建的对象，静态方法只能访问类中的静态成员变量，所以，指向类内部产生的该类对象的变量也必须定义成静态的。</li>
+</ul></li>
+<li>单例设计模式实现【笔试时写线程安全的，不要写线程不安全的代码】
+<ul>
+<li><strong>饿汉式</strong>单例模式实现（先把对象创建出来）</li>
+<li><strong>懒汉式</strong>单例设计模式（不用对象不造，用的时候才造对象）</li>
+</ul></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 饿汉式（单例模式）</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Bank</span></span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 私有化构造器</span></span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="title">Bank</span><span class="params">()</span></span>&#123;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 内部创建类的对象</span></span><br><span class="line">	<span class="comment">// 静态方法中操作的对象也需要是静态的</span></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> Bank instance = <span class="keyword">new</span> Bank();</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 提供公共的静态方法，返回类的对象</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Bank <span class="title">getInstance</span><span class="params">()</span></span>&#123;</span><br><span class="line">		<span class="keyword">return</span> instance;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 懒汉式</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Order</span></span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 1. 私有化构造器</span></span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="title">Order</span><span class="params">()</span></span>&#123;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 2. 声明当前类对象，无需初始化</span></span><br><span class="line">	<span class="comment">// 4. 此对象需声明为静态的</span></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> Order instance = <span class="keyword">null</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 3. 声明public、static的返回当前类对象的方法</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Order <span class="title">getInstance</span><span class="params">()</span></span>&#123;</span><br><span class="line">		<span class="keyword">if</span>(instance == <span class="keyword">null</span>)&#123;</span><br><span class="line">			instance = <span class="keyword">new</span> Order();</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> instance;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="4" type="1">
+<li>区分饿汉式和懒汉式
+<ul>
+<li>饿汉式
+<ul>
+<li>坏处：对象加载的时间过长（先加载出来对象，有可能长时间不用）</li>
+<li>好处：是线程安全的</li>
+</ul></li>
+<li>懒汉式：
+<ul>
+<li>好处：延迟对象的创建</li>
+<li>目前写法的坏处：线程不安全 ---&gt;多线程项目时需修改</li>
+</ul></li>
+</ul></li>
+<li>单例模式的优点
+<ul>
+<li>由于单例模式只生成一个实例，减少了系统性能开销，当一个对象的产生需要比较多的资源时，如读取配置、产生其他依赖对象时，则可以通过在应用启动时直接产生一个单例对象，然后永久驻留内存的方式来解决。</li>
+<li>举例：java.lang.Runtime</li>
+</ul></li>
+<li>单例模式的应用场景
+<ul>
+<li>网站的计数器，一般也是单例模式实现，否则难以同步。</li>
+<li>应用程序的日志应用，一般都使用单例模式实现，这一般是由于共享的日志文件一直处于打开状态，因为只能有一个实例去操作，否则内容不好追加。</li>
+<li>数据库连接池的设计一般也是采用单例模式，因为数据库连接是一种数据库资源。</li>
+<li>项目中，读取配置文件的类，一般也只有一个对象。没有必要每次使用配置文件数据，都生成一个对象去读取。</li>
+<li>Application 也是单例的典型应用</li>
+<li>Windows的Task Manager (任务管理器)就是很典型的单例模式</li>
+<li>Windows的Recycle Bin (回收站)也是典型的单例应用。在整个系统运行过程中，回收站一直维护着仅有的一个实例。</li>
+</ul></li>
+</ol>
+<h2 id="二理解main方法的语法">二、理解main方法的语法</h2>
+<ol type="1">
+<li>main()方法作为程序的入口</li>
+<li>main()方法也是一个普通的静态方法</li>
+<li>main()方法可作为我们与控制台交互的方式（之前用的是Scanner）</li>
+</ol>
+<h2 id="三类的成员之四代码块或初始化块">三、类的成员之四：代码块（或初始化块）</h2>
+<ol type="1">
+<li>代码块的作用：用来初始化类、对象</li>
+<li>代码块如有修饰，只能使用static。因此代码块分为<strong>静态代码块 vs 非静态代码块</strong></li>
+<li>静态代码块
+<ul>
+<li>格式：static { ... }</li>
+<li>内部可有输出语句</li>
+<li>随着类的加载（使用到类时加载）而执行，只会执行一次，除非类被重新加载</li>
+<li>作用：初始化类的信息</li>
+<li>如一个类中定义了多个静态代码块，则按照声明的先后顺序执行</li>
+<li>静态代码块的执行优先于非静态代码块的执行（类和对象加载先后）。静态代码块只能调用静态属性、方法，不能调用非静态的结构</li>
+</ul></li>
+<li>非静态代码块
+<ul>
+<li>格式：{ ... }</li>
+<li>内部可有输出语句</li>
+<li>随着对象的创建而执行，每创建一个就执行一次</li>
+<li>作用：在创建对象时，对对象的属性进行初始化</li>
+<li>如一个类中定义了多个非静态代码块，则按照声明的先后顺序执行</li>
+<li>非静态代码块既可调用静态属性、方法，也可调用非静态的结构</li>
+</ul></li>
+<li>静态代码块、构造器、静态方法（包含main）、非静态代码块执行的先后顺序：由父及子，静态先行。 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> codeblock;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Root</span></span>&#123;</span><br><span class="line">	<span class="keyword">static</span>&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;Root的静态初始化块&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;Root的普通初始化块&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">Root</span><span class="params">()</span></span>&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;Root的无参数的构造器&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Mid</span> <span class="keyword">extends</span> <span class="title">Root</span></span>&#123;</span><br><span class="line">	<span class="keyword">static</span>&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;Mid的静态初始化块&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;Mid的普通初始化块&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">Mid</span><span class="params">()</span></span>&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;Mid的无参数的构造器&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">Mid</span><span class="params">(String msg)</span></span>&#123;</span><br><span class="line">		<span class="comment">//通过this调用同一类中重载的构造器</span></span><br><span class="line">		<span class="keyword">this</span>();</span><br><span class="line">		System.out.println(<span class="string">&quot;Mid的带参数构造器，其参数值：&quot;</span></span><br><span class="line">			+ msg);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Leaf</span> <span class="keyword">extends</span> <span class="title">Mid</span></span>&#123;</span><br><span class="line">	<span class="keyword">static</span>&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;Leaf的静态初始化块&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;Leaf的普通初始化块&quot;</span>);</span><br><span class="line">	&#125;	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">Leaf</span><span class="params">()</span></span>&#123;</span><br><span class="line">		<span class="comment">//通过super调用父类中有一个字符串参数的构造器</span></span><br><span class="line">		<span class="keyword">super</span>(<span class="string">&quot;尚硅谷&quot;</span>);</span><br><span class="line">		System.out.println(<span class="string">&quot;Leaf的构造器&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LeafTest</span></span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">		<span class="keyword">new</span> Leaf(); </span><br><span class="line">		<span class="comment">//new Leaf();</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> codeblock;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Father</span> </span>&#123;</span><br><span class="line">	<span class="keyword">static</span> &#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;11111111111&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;22222222222&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">Father</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;33333333333&quot;</span>);</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Son</span> <span class="keyword">extends</span> <span class="title">Father</span> </span>&#123;</span><br><span class="line">	<span class="keyword">static</span> &#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;44444444444&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;55555555555&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">Son</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;66666666666&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123; <span class="comment">// 由父及子 静态先行</span></span><br><span class="line">		System.out.println(<span class="string">&quot;77777777777&quot;</span>);</span><br><span class="line">		System.out.println(<span class="string">&quot;************************&quot;</span>);</span><br><span class="line">		<span class="keyword">new</span> Son();</span><br><span class="line">		System.out.println(<span class="string">&quot;************************&quot;</span>);</span><br><span class="line"></span><br><span class="line">		<span class="keyword">new</span> Son();</span><br><span class="line">		System.out.println(<span class="string">&quot;************************&quot;</span>);</span><br><span class="line">		<span class="keyword">new</span> Father();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>属性赋值的先后顺序：默认初始化 - 显式初始化 / 代码块（先后顺序） - 构造器中赋值 - 创建对象后通过对象.方法或对象.属性赋值</li>
+</ol>
+<h2 id="四关键字final">四、关键字：final</h2>
+<p>final：最终的 1. final可用来修饰：类、方法、变量 2. final修饰类：此类即不可被其他类继承 - 例如：String类、System类、StringBuffer类 3. final修饰方法：此方法不可被重写 - 例如：Object类中的getClass()方法【native关键字表示其方法实现采用C/C++代码实现】 4. final修饰变量：此“变量”即为一个常量 - final修饰属性：可赋值的位置有显式初始化、代码块中赋值、构造器中初始化【不可使用默认值，不可采用set方法赋值（类的构造器执行完毕后对象及其内部结构就应被初始化，而方法晚于对象及属性初始化）】 - final修饰局部变量： - 尤其使用final修饰形参时，表明此形参为一个常量，当调用此方法时，给常量形参赋一个实参，一旦赋值后，就只能在方法体内使用此形参，不可进行赋值等修改操作</p>
+<ol start="5" type="1">
+<li>static final可用来修饰：属性、方法
+<ul>
+<li>修饰属性：全局（static）常量（final）</li>
+</ul></li>
+</ol>
+<h2 id="五抽象类与抽象方法少数认为归为特征封装继承多态抽象一般归为关键字abstract">五、抽象类与抽象方法【少数认为归为特征（封装、继承、多态、抽象），一般归为关键字：abstract】</h2>
+<ol type="1">
+<li>抽象类定义</li>
+</ol>
+<ul>
+<li>随着继承层次中一个个新子类的定义，类变得越来越具体，而父类则更一般，更通用。类的设计应该保证父类和子类能够共享特征。有时将一个父类设计得非常抽象，以至于它没有具体的实例，这样的类叫做抽象类。</li>
+</ul>
+<ol start="2" type="1">
+<li><p>abstract关键字的使用：abstract可用来修饰类、方法</p></li>
+<li><p>abstract修饰类</p>
+<ul>
+<li>抽象类不能实例化</li>
+<li>抽象类中一定有构造器，子类实例化时会调用</li>
+<li>开发中，需提供抽象类的子类，让子类实例化，完成开发工作</li>
+</ul></li>
+<li><p>abstract修饰方法</p>
+<ul>
+<li>抽象方法只有方法的声明，无方法体</li>
+<li>包含抽象方法的类一定是抽象类，反之抽象类中可以没有抽象方法</li>
+<li>若子类重写了父类中的所有抽象方法，此类方可实例化；若子类没有重写父类中的所有抽象方法，此类仍需是抽象类，需使用abstract修饰类。 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span></span>&#123;</span><br><span class="line">	<span class="comment">// 抽象方法</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">eat</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 若子类重写了父类中的所有抽象方法，此类方可实例化</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Stu</span> <span class="keyword">extends</span> <span class="title">Person</span></span>&#123;</span><br><span class="line">	<span class="comment">// Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">eat</span><span class="params">()</span></span>&#123;</span><br><span class="line">		...</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 若子类没有重写父类中的所有抽象方法，此类仍需是抽象类</span></span><br><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Man</span> <span class="keyword">extends</span> <span class="title">Person</span></span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">Man</span><span class="params">()</span></span>&#123;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul></li>
+<li><p>abstract使用上的注意点：不可修饰属性、构造器；不可修饰私有方法、静态方法和final方法（私有方法和静态方法无法重写）</p></li>
+</ol>
+<h3 id="举例l">举例l</h3>
+<p>IO流中涉及到的抽象类：InputStream / OutputStream / Reader / Writer，在其内部定义了抽象的read()、write()方法</p>
+<h3 id="抽象类的匿名子类">抽象类的匿名子类</h3>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Person为抽象类，含有一个eat抽象方法</span></span><br><span class="line"><span class="comment">// 匿名子类</span></span><br><span class="line">Person p = <span class="keyword">new</span> Person()&#123;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">eat</span><span class="params">()</span></span>&#123;</span><br><span class="line">		...</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line">method(p);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 匿名子类的匿名对象</span></span><br><span class="line">method( <span class="keyword">new</span> Person()&#123;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">eat</span><span class="params">()</span></span>&#123;</span><br><span class="line">		...</span><br><span class="line">	&#125;</span><br><span class="line">&#125; );</span><br></pre></td></tr></table></figure>
+<h3 id="模板方法设计模式templatemethod抽象类的应用">模板方法设计模式（TemplateMethod）【抽象类的应用】</h3>
+<p>抽象类体现的就是一种模板模式的设计，抽象类作为多个子类的通用模板，子类在抽象类的基础上进行扩展、改造，但子类总体上会保留抽象类的行为方式。</p>
+<p>解决的问题： - 当功能内部一部分实现是确定的，一部分实现是不确定的。这时可以把不确定的部分暴露出去，让子类去实现。 - 换句话说，在软件开发中实现一个算法时，整体步骤很固定、通用，这些步骤已经在父类中写好了。但是某些部分易变，易变部分可以抽象出来，供不同子类实现。这就是一种模板模式。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Template</span></span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">spendTime</span><span class="params">()</span></span>&#123;</span><br><span class="line">		<span class="keyword">long</span> start = System.currentTimeMillis();</span><br><span class="line">		</span><br><span class="line">		code(); <span class="comment">//不确定的部分； 像个钩子一样，挂哪个子类就执行那个子类的实现代码</span></span><br><span class="line">		</span><br><span class="line">		<span class="keyword">long</span> end = System.currentTimeMillis();</span><br><span class="line">		</span><br><span class="line">		System.out.println(<span class="string">&quot;花费的时间为：&quot;</span> + (end - start));</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">code</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Code</span> <span class="keyword">extends</span> <span class="title">Template</span></span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">code</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="六接口interface关键字的使用">六、接口（interface）【关键字的使用】</h2>
+<ul>
+<li>一方面，有时必须从几个类中派生出一个子类，继承它们所有的属性和方法。但是，Java不支持多重继承。有了接口，就可以得到多重继承的效果。</li>
+<li>另一方面，有时必须从几个类中抽取出一些共同的行为特征，而它们之间又没有is-a的关系，仅仅是具有相同的行为特征而已。例如：鼠标、键盘、打印机、扫描仪、摄像头、充电器、MP3机、手机、数码相机、移动硬盘等都支持USB连接。</li>
+<li>接口就是规范，定义的是一组规则，体现了现实世界中“如果你是/要...则必须能...”的思想。继承是一个"是不是"的关系，而接口实现则是 "能不能" 的关系。</li>
+<li>接口的本质是契约，标准，规范，就像我们的法律一样。制定好后大家都要遵守。</li>
+</ul>
+<h3 id="接口的使用jdk7及之前">接口的使用(JDK7及之前)</h3>
+<ol type="1">
+<li><p>接口使用interface来定义</p></li>
+<li><p>Java中，接口和类是并列的两个结构</p></li>
+<li><p>如何定义接口，定义接口中的成员</p>
+<ul>
+<li>JDK 7及以前，只能定义全局常量和抽象方法
+<ul>
+<li>全局常量：public static final的(可省略不写，但仍是全局常量)</li>
+<li>抽象方法：public abstract的</li>
+</ul></li>
+<li>JDK 8：除了定义全局常量和抽象方法之外，还可定义静态方法、默认方法</li>
+</ul></li>
+<li><p>接口中不能定义构造器，意味着接口不可实例化</p></li>
+<li><p>Java开发中接口通过让类去实现（implements）的方式使用。如果实现类覆盖了接口中所有抽象方法，此实现类即可实例化；否则，该类是抽象类，需使用abstract修饰</p></li>
+<li><p>类中把abstract方法重写其实是<strong>实现</strong>，子类覆盖父类的方法叫重写</p></li>
+<li><p>Java类可实现多个接口（多实现） ---&gt; 弥补了Java单继承的局限性。</p>
+<ul>
+<li>格式：class AA extends BB implements CC, DD, EE{} <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">Attackable</span></span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">attack</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">Flyable</span></span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 全局常量</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MAX_SPEED = <span class="number">7900</span>; <span class="comment">//第一宇宙速度</span></span><br><span class="line">	<span class="keyword">int</span> MIN_SPEED = <span class="number">1</span>; <span class="comment">// 省略了public static final</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 抽象方法</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">fly</span><span class="params">()</span></span>;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">stop</span><span class="params">()</span></span>; <span class="comment">// 省略了public abstract</span></span><br><span class="line">	</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Bullet</span> <span class="keyword">extends</span> <span class="title">Object</span> <span class="keyword">implements</span> <span class="title">Flyable</span>, <span class="title">Attackable</span></span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">attack</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">fly</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">stop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul></li>
+<li><p>接口和接口之间可以<strong>多继承</strong> <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">AA</span></span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">method</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">BB</span></span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">method1</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">CC</span> <span class="keyword">extends</span> <span class="title">AA</span>, <span class="title">BB</span></span>&#123;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span> <span class="keyword">implements</span> <span class="title">CC</span></span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">method</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">method1</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p></li>
+<li><p>接口的具体使用，体现多态性</p></li>
+<li><p>接口实际上可看作是一种规范（例如USB是一种规范，具体的硬盘、U盘、打印机都需要去实现USB规范中的具体操作，驱动即是接口实现类的集合）</p></li>
+<li><p>开发中，体会面向接口编程</p></li>
+</ol>
+<ul>
+<li>接口的主要用途就是被实现类实现（面向接口编程）</li>
+<li>项目的具体需求是多变的，我们必须以不变应万变才能从容开发，此处的不变就是规范，因此，开发项目往往是面向接口编程</li>
+<li>例子：面向接口编程，在应用程序中，调用的结构都是JDBC中定义的接口，不会出现具体某一个数据库厂商的API</li>
+</ul>
+<ol start="12" type="1">
+<li>创建实现类对象的四种类型</li>
+</ol>
+<ul>
+<li>非匿名实现类的非匿名对象</li>
+<li>非匿名实现类的匿名对象</li>
+<li>匿名实现类的非匿名对象</li>
+<li>匿名实现类的匿名对象</li>
+</ul>
+<h3 id="接口的应用">接口的应用</h3>
+<ol type="1">
+<li>代理模式（Proxy）
+<ul>
+<li>应用场景
+<ul>
+<li>安全代理：屏蔽对真实角色的直接访问。</li>
+<li>远程代理：通过代理类处理远程方法调用（RMI）</li>
+<li>延迟加载：先加载轻量级的代理对象，真正需要再加载真实对象</li>
+</ul></li>
+<li>分类
+<ul>
+<li>静态代理（静态定义代理类）</li>
+<li>动态代理（动态生成代理类）
+<ul>
+<li>JDK自带的动态代理，需要反射等知识</li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li>工厂模式
+<ul>
+<li>简单工厂模式：class XxxFactory{}。创建Xxx对象的类</li>
+<li>工厂方法模式</li>
+<li>抽象工厂模式</li>
+</ul></li>
+</ol>
+<h3 id="接口的使用jdk8">接口的使用（JDK8）</h3>
+<p>除了定义全局常量和抽象方法之外，还可定义静态方法、默认方法</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">InterfaceJDK8</span> </span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 静态方法</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">method1</span><span class="params">()</span></span>&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;method1&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 默认方法</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">default</span> <span class="keyword">void</span> <span class="title">method2</span><span class="params">()</span></span>&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;method2&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 此处只是省略了public</span></span><br><span class="line">	<span class="function"><span class="keyword">default</span> <span class="keyword">void</span> <span class="title">method3</span><span class="params">()</span></span>&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;method3&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol type="1">
+<li><p>接口中定义的静态方法，只能通过接口来调用（接口名.静态方法），实现类无法调用</p></li>
+<li><p>实现类的对象可调用接口中的默认方法。如果实现类重写了接口中的默认方法（重写时不加default关键字），调用时调用的是重写后的方法</p></li>
+<li><p>如果子类或实现类继承的父类 和 实现的接口中声明了同名同参数的方法（默认方法），在子类没有重写此方法的情况下，调用的是父类中的同名同参数方法 --&gt; 类优先原则（只是指方法，属性不适用）</p></li>
+<li><p>如果实现类实现了多个接口，而这多个接口中定义了同名同参数的默认方法，，那么在实现类没有重写此方法的情况下，报错 --&gt; 接口冲突。需要在实现类中重写此方法</p></li>
+<li><p>在实现类方法中调用父类、接口中的方法</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SubClass</span> <span class="keyword">extends</span> <span class="title">SuperClass</span> <span class="keyword">implements</span> <span class="title">InterfaceA</span>, <span class="title">InterfaceB</span></span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">method3</span><span class="params">()</span></span>&#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">method</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">// 假设method3为SuperClass、InterfaceA、InterfaceB中有方法体的同名同参数方法</span></span><br><span class="line">        method3(); <span class="comment">//调用自己重写的方法</span></span><br><span class="line">        <span class="keyword">super</span>.method3(); <span class="comment">//调用父类中的方法</span></span><br><span class="line">        InterfaceA.<span class="keyword">super</span>.method3(); <span class="comment">//调用InterfaceA接口中的method3()方法</span></span><br><span class="line">        InterfaceB.<span class="keyword">super</span>.method3(); <span class="comment">//调用InterfaceB接口中的method3()方法</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="七类的成员之五内部类自己写比较少但源码中会出现">七、类的成员之五：内部类（自己写比较少，但源码中会出现）</h2>
+<ol type="1">
+<li><p>Java中允许将一个类A声明在另一个类B中，则A为内部类，类B为外部类</p></li>
+<li><p>内部类分类：成员内部类 vs 局部内部类（方法内、代码块内、构造期内...）</p></li>
+<li><p>成员内部类</p>
+<ul>
+<li>作为外部类的成员：
+<ul>
+<li>可调用外部类结构</li>
+<li>可被static修饰（内部类可被static修饰，外部类不可）</li>
+<li>作为成员，可被四种权限修饰</li>
+</ul></li>
+<li>作为一个类：
+<ul>
+<li>类内部定义属性、方法、构造器等</li>
+<li>可被final修饰，表示此类不可被继承。反之可被继承</li>
+<li>可被abstract修饰</li>
+</ul></li>
+</ul></li>
+<li><p>关注的3个问题</p></li>
+</ol>
+<ul>
+<li><p>如何实例化成员内部类对象</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InnerClassTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">		</span><br><span class="line">		<span class="comment">// 创建Dog实例（静态成员内部类）</span></span><br><span class="line">		Person.Dog dog = <span class="keyword">new</span> Person.Dog();</span><br><span class="line">		</span><br><span class="line">		<span class="comment">// 创建Bird实例（非静态成员内部类）</span></span><br><span class="line">		Person p = <span class="keyword">new</span> Person();</span><br><span class="line">		Person.Bird bird = p.<span class="function">new <span class="title">Bird</span><span class="params">()</span></span>;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>如何在成员内部类中区分调用外部类结构</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span></span>&#123;</span><br><span class="line">	String name;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">method</span><span class="params">()</span></span>&#123;</span><br><span class="line">		<span class="comment">// 局部内部类</span></span><br><span class="line">		<span class="class"><span class="keyword">class</span> <span class="title">AA</span></span>&#123;</span><br><span class="line">			</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 静态成员内部类</span></span><br><span class="line">	<span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Dog</span></span>&#123;</span><br><span class="line">		<span class="comment">// 属性、构造器、方法、代码块</span></span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 非静态成员内部类</span></span><br><span class="line">	<span class="class"><span class="keyword">class</span> <span class="title">Bird</span></span>&#123;</span><br><span class="line">		<span class="comment">// 属性、构造器、方法、代码块</span></span><br><span class="line">		String name;</span><br><span class="line">		</span><br><span class="line">		<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">display</span><span class="params">(String name)</span></span>&#123;</span><br><span class="line">			System.out.println(<span class="string">&quot;形参：&quot;</span> + name);</span><br><span class="line">			System.out.println(<span class="string">&quot;内部类name：&quot;</span> + <span class="keyword">this</span>.name);</span><br><span class="line">			System.out.println(<span class="string">&quot;外部类name：&quot;</span> + Person.<span class="keyword">this</span>.name);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>开发中局部内部类的调用</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InnerClassTest1</span> </span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 开发中少见</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">method</span><span class="params">()</span></span>&#123;</span><br><span class="line">		<span class="comment">// 局部内部类</span></span><br><span class="line">		<span class="class"><span class="keyword">class</span> <span class="title">AA</span></span>&#123;</span><br><span class="line">			</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 返回一个实现了Comparable接口的类的对象</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> Comparable <span class="title">getComparable</span><span class="params">()</span></span>&#123;</span><br><span class="line">		</span><br><span class="line">		<span class="comment">// 方式一</span></span><br><span class="line">		<span class="comment">// 创建一个实现了Comparable接口的类: 局部内部类</span></span><br><span class="line">		<span class="class"><span class="keyword">class</span> <span class="title">MyComparable</span> <span class="keyword">implements</span> <span class="title">Comparable</span></span>&#123;</span><br><span class="line"></span><br><span class="line">			<span class="meta">@Override</span></span><br><span class="line">			<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compareTo</span><span class="params">(Object o)</span> </span>&#123;</span><br><span class="line">				<span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line">				<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">			&#125;</span><br><span class="line">			</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">new</span> MyComparable();</span><br><span class="line">		</span><br><span class="line">		<span class="comment">// 方式二</span></span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">new</span> Comparable()&#123;</span><br><span class="line"></span><br><span class="line">			<span class="meta">@Override</span></span><br><span class="line">			<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compareTo</span><span class="params">(Object o)</span> </span>&#123;</span><br><span class="line">				<span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line">				<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">			&#125;</span><br><span class="line">			</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ol start="5" type="1">
+<li>注意点
+<ul>
+<li>在局部内部类方法中，如要在局部内部类所声明的方法中调用内部类所在方法中的局部变量的话，要求此变量声明为final的。JDK7之前，要求此局部变量显式声明为final，JDK8及之后，可省略显式声明。（移动端开发 （android开发）使用较多）【原因：每个类都会生成一个字节码文件，但是方法中的局部变量作用域和字节码文件作用域不同，因此需要声明局部变量为final，且传给内部类中的方法的变量值为该局部变量的副本】</li>
+</ul></li>
+<li>总结
+<ul>
+<li>成员内部类和局部内部类，在编译后都会生成字节码文件。格式：</li>
+<li>成员内部类：外部类名$内部类名.class，例如：Person$Dog.class</li>
+<li>局部内部类：外部类名$数字内部类名.class，例如：Person$1Bird.class</li>
+</ul></li>
+</ol>
+<h2 id="面试题">面试题</h2>
+<ol type="1">
+<li><p>final 排错 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Something</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">addOne</span><span class="params">(<span class="keyword">final</span> <span class="keyword">int</span> x)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> ++x;</span><br><span class="line">		<span class="comment">// return x + 1;</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Something</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">		Other o = <span class="keyword">new</span> Other();</span><br><span class="line">		<span class="keyword">new</span> Something().addOne(o);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addOne</span><span class="params">(<span class="keyword">final</span> Other o)</span> </span>&#123;</span><br><span class="line">		<span class="comment">// o = new Other();</span></span><br><span class="line">		o.i++;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Other</span> </span>&#123;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">int</span> i;</span><br></pre></td></tr></table></figure></p></li>
+<li><p>抽象类和接口有哪些异同？</p>
+<ul>
+<li>相同点：
+<ul>
+<li>不可实例化，都包含抽象方法；</li>
+</ul></li>
+<li>不同点：
+<ul>
+<li>抽象类和接口定义、内部结构解释说明（JDK7及前，JDK8，JDK9）</li>
+<li>抽象类有构造器，接口无构造器；</li>
+<li>单继承和多继承</li>
+<li>类与接口的关系：多实现</li>
+</ul></li>
+<li>JDK8新特性</li>
+<li>JDK9新特性</li>
+</ul></li>
+<li><p>排错 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">A</span> </span>&#123;</span><br><span class="line">	<span class="keyword">int</span> x = <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> </span>&#123;</span><br><span class="line">	<span class="keyword">int</span> x = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span> <span class="keyword">extends</span> <span class="title">B</span> <span class="keyword">implements</span> <span class="title">A</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">pX</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		System.out.println(x); <span class="comment">// 编译报错，变量不明确</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">new</span> C().pX();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">Playable</span> </span>&#123; </span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">play</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">Bounceable</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">play</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">Rollable</span> <span class="keyword">extends</span> <span class="title">Playable</span>, <span class="title">Bounceable</span> </span>&#123;</span><br><span class="line">	Ball ball = <span class="keyword">new</span> Ball(<span class="string">&quot;PingPang&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Ball</span> <span class="keyword">implements</span> <span class="title">Rollable</span></span>&#123;</span><br><span class="line">	<span class="keyword">private</span> String name;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span></span>&#123;</span><br><span class="line">		<span class="keyword">return</span> name;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">Ball</span><span class="params">(String name)</span></span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.name = name;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">play</span><span class="params">()</span></span>&#123;</span><br><span class="line">		ball = <span class="keyword">new</span> Ball(<span class="string">&quot;Football&quot;</span>); </span><br><span class="line">		<span class="comment">// interface中声明和初始化的ball为常量，不可赋值，此处错误</span></span><br><span class="line">		System.out.println(ball.getName());</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p></li>
+</ol>
+<h2 id="每日一考">每日一考</h2>
+<ol type="1">
+<li><p>static修饰的属性，相较于实例变量，有哪些特别之处</p>
+<ul>
+<li>随着类的加载而加载，早于对象的创建，只要权限允许，可通过对象.属性的方式进行调用，存在于方法区的静态域中。</li>
+</ul></li>
+<li><p>final可用来修饰那些结构，分别表示什么意思</p>
+<ul>
+<li>修饰类（不可继承）、方法（不可重写）、属性（常量）、局部变量（显式初始化、构造器、代码块）</li>
+</ul></li>
+<li><p>代码实现单例模式的饿汉式和懒汉式</p></li>
+<li><p>类的属性赋值位置有哪些？先后顺序为？</p>
+<ul>
+<li>默认初始化 - 显式初始化 / 代码块 - 构造器 - 创建对象后采用对象.属性或对象.方法方式赋值</li>
+</ul></li>
+<li><p>abstract能修饰那些结构？修饰以后，有什么特点？</p>
+<ul>
+<li>abstract可修饰类、方法
+<ul>
+<li>抽象类无法直接创建对象，必须要被继承并重写内部的所有抽象方法才能创建对象</li>
+<li>抽象方法无方法体，只定义了一种功能的标准，具体的执行过程，需要子类去实现</li>
+</ul></li>
+</ul></li>
+<li><p>接口是否能继承接口？抽象类是否能实现接口？抽象类是否能继承非抽象的类</p>
+<ul>
+<li>接口可以继承接口，且可以多继承</li>
+<li>抽象类可以实现接口</li>
+<li>抽象类可以继承非抽象的类</li>
+</ul></li>
+<li><h2 id="声明抽象类并包含抽象方法测试类中创建一个继承抽象类的匿名子类对象">声明抽象类，并包含抽象方法，测试类中创建一个继承抽象类的匿名子类对象</h2></li>
+<li><p>抽象类和接口有哪些共同点和区别？</p>
+<ul>
+<li>抽象类和接口都无法直接创建对象，都可被继承</li>
+<li>抽象类有构造器，接口不能声明构造器；单继承 vs 多继承；</li>
+</ul></li>
+<li><p><strong>如何创建静态成员内部类和非静态成员内部类的对象</strong>？</p>
+<ul>
+<li>静态成员内部类的对象：外部类.内部类 引用名 = new 外部类.内部类();</li>
+<li>非静态成员内部类对象：外部类.内部类 引用名 = 外部类对象名.new.(外部类.)内部类();</li>
+</ul></li>
+<li><p>static、final、abstract分别能用来修饰什么？联系和区别总结。</p></li>
+</ol>
+]]></content>
+      <categories>
+        <category>程序设计</category>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>笔记</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>第5章 面向对象编程-中</title>
     <url>/2022/01/11/Coding/Java/05%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%BC%96%E7%A8%8B%E4%B8%AD/</url>
     <content><![CDATA[<h1 id="第5章面向对象编程-中">第5章、面向对象编程-中</h1>
@@ -316,7 +697,7 @@
       </tags>
   </entry>
   <entry>
-    <title>第四章 面向对象编程-上</title>
+    <title>第4章 面向对象编程-上</title>
     <url>/2021/11/25/Coding/Java/04%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E4%B8%8A/</url>
     <content><![CDATA[<h1 id="第4章面向对象编程-上">第4章、面向对象编程-上</h1>
 <h2 id="学习面向对象内容的三条主线">学习面向对象内容的三条主线：</h2>
@@ -818,8 +1199,8 @@
       </tags>
   </entry>
   <entry>
-    <title>第三章 Java数组</title>
-    <url>/2021/11/25/Coding/Java/03Java%E6%95%B0%E7%BB%84/</url>
+    <title>第3章 Java数组</title>
+    <url>/2021/11/24/Coding/Java/03Java%E6%95%B0%E7%BB%84/</url>
     <content><![CDATA[<h1 id="第3章-数组">第3章 数组</h1>
 <h2 id="目录">目录</h2>
 <ol type="1">
@@ -916,7 +1297,7 @@
 </ul></li>
 </ul>
 <figure>
-<img src="/2021/11/25/Coding/Java/03Java%E6%95%B0%E7%BB%84/55%20Day3%20-%2001.png" alt="第1行代码执行时内存中的变化"><figcaption aria-hidden="true">第1行代码执行时内存中的变化</figcaption>
+<img src="/2021/11/24/Coding/Java/03Java%E6%95%B0%E7%BB%84/55%20Day3%20-%2001.png" alt="第1行代码执行时内存中的变化"><figcaption aria-hidden="true">第1行代码执行时内存中的变化</figcaption>
 </figure>
 <ul>
 <li>第2行代码执行时内存中的变化为：
@@ -925,7 +1306,7 @@
 </ul></li>
 </ul>
 <figure>
-<img src="/2021/11/25/Coding/Java/03Java%E6%95%B0%E7%BB%84/56%20Day3%20-%2002.png" alt="第2行代码执行时内存中的变化"><figcaption aria-hidden="true">第2行代码执行时内存中的变化</figcaption>
+<img src="/2021/11/24/Coding/Java/03Java%E6%95%B0%E7%BB%84/56%20Day3%20-%2002.png" alt="第2行代码执行时内存中的变化"><figcaption aria-hidden="true">第2行代码执行时内存中的变化</figcaption>
 </figure>
 <ul>
 <li>第3行代码执行时内存中的变化为：
@@ -935,7 +1316,7 @@
 </ul></li>
 </ul>
 <figure>
-<img src="/2021/11/25/Coding/Java/03Java%E6%95%B0%E7%BB%84/57%20Day3%20-%2003.png" alt="第3行代码执行时内存中的变化"><figcaption aria-hidden="true">第3行代码执行时内存中的变化</figcaption>
+<img src="/2021/11/24/Coding/Java/03Java%E6%95%B0%E7%BB%84/57%20Day3%20-%2003.png" alt="第3行代码执行时内存中的变化"><figcaption aria-hidden="true">第3行代码执行时内存中的变化</figcaption>
 </figure>
 <ul>
 <li>第4行代码执行时内存中的变化为：
@@ -947,7 +1328,7 @@
 <li><p>练习<br> 升景坊单间短期出租4个月 ，550 元/月（水电煤公摊，网费 35 元/月），空调、卫生间厨房齐全。屋内均是 IT 行业人士，喜欢安静。 所以要求来租者最好是同或刚毕的年轻爱干净、行业人士，喜欢安静。所以要求来租者最好是同或刚毕的年轻爱干净、</p>
 <p><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 采用执行程序的方式筛选IT人士</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ArrayTest</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">int</span>[] arr = <span class="keyword">new</span> <span class="keyword">int</span>[] &#123; <span class="number">8</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">3</span> &#125;;</span><br><span class="line">            <span class="keyword">int</span>[] index = <span class="keyword">new</span> <span class="keyword">int</span>[] &#123; <span class="number">2</span>, <span class="number">0</span>, <span class="number">3</span>, <span class="number">2</span>, <span class="number">4</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">3</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">3</span> &#125;;</span><br><span class="line">            String tel = <span class="string">&quot;&quot;</span>;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; index.length; i++) &#123;</span><br><span class="line">                tel += arr[index[i]];</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(<span class="string">&quot; 联系方式： &quot;</span> + tel);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> 从键盘输入学生的成绩，找出最高分，并输出学生的成绩等级：<br> 成绩&gt;=最高分-10分 等级为A<br> 成绩&gt;=最高分-20分 等级为B<br> 成绩&gt;=最高分-30分 等级为C<br> 其他 等级为D</p>
 <figure>
-<img src="/2021/11/25/Coding/Java/03Java%E6%95%B0%E7%BB%84/60%20Day3%20-%2006.png" alt="题目程序实现"><figcaption aria-hidden="true">题目程序实现</figcaption>
+<img src="/2021/11/24/Coding/Java/03Java%E6%95%B0%E7%BB%84/60%20Day3%20-%2006.png" alt="题目程序实现"><figcaption aria-hidden="true">题目程序实现</figcaption>
 </figure>
 <blockquote>
 <p>请输入学生人数：5<br> 请输入5个学生的成绩：<br> 15<br> 20<br> 25<br> 50<br> 70<br> 最高分为:70<br> student 0 score is 15 grade is D<br> student 1 score is 20 grade is D<br> student 2 score is 25 grade is D<br> student 3 score is 50 grade is B<br> student 4 score is 70 grade is A<br></p>
@@ -989,7 +1370,7 @@
 <li>若数组在初始化时并没有对内层数组初始化，则调用内层数组元素时报错（空指针异常）</li>
 </ul></li>
 </ul></li>
-<li><p>数组内存解析 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span>[][] arr1 = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">4</span>][];</span><br><span class="line">arr1[<span class="number">1</span>] = <span class="keyword">new</span> <span class="keyword">int</span>[]&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>&#125;;</span><br><span class="line">arr[<span class="number">2</span>] = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">4</span>];</span><br><span class="line">arr[<span class="number">2</span>][<span class="number">1</span>] = <span class="number">30</span>;</span><br></pre></td></tr></table></figure> <img src="/2021/11/25/Coding/Java/03Java%E6%95%B0%E7%BB%84/61%20Day3%20-%2007.png" alt="数组内存解析示意图"></p></li>
+<li><p>数组内存解析 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span>[][] arr1 = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">4</span>][];</span><br><span class="line">arr1[<span class="number">1</span>] = <span class="keyword">new</span> <span class="keyword">int</span>[]&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>&#125;;</span><br><span class="line">arr[<span class="number">2</span>] = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">4</span>];</span><br><span class="line">arr[<span class="number">2</span>][<span class="number">1</span>] = <span class="number">30</span>;</span><br></pre></td></tr></table></figure> <img src="/2021/11/24/Coding/Java/03Java%E6%95%B0%E7%BB%84/61%20Day3%20-%2007.png" alt="数组内存解析示意图"></p></li>
 <li><p>复习</p></li>
 </ol>
 <ul>
@@ -1157,7 +1538,7 @@
       </tags>
   </entry>
   <entry>
-    <title>第二章 Java基本语法</title>
+    <title>第2章 Java基本语法</title>
     <url>/2021/11/23/Coding/Java/02Java%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95/</url>
     <content><![CDATA[<h1 id="第2章-基本语法">第2章 基本语法</h1>
 <h2 id="目录">目录</h2>
@@ -1802,8 +2183,8 @@
       </tags>
   </entry>
   <entry>
-    <title>第一章 Java语言概述</title>
-    <url>/2021/11/23/Coding/Java/01Java%E8%AF%AD%E8%A8%80%E6%A6%82%E8%BF%B0/</url>
+    <title>第1章 Java语言概述</title>
+    <url>/2021/11/22/Coding/Java/01Java%E8%AF%AD%E8%A8%80%E6%A6%82%E8%BF%B0/</url>
     <content><![CDATA[<h1 id="第1章-java语言概述">第1章 Java语言概述</h1>
 <h2 id="目录">目录</h2>
 <ol type="1">
@@ -1922,11 +2303,11 @@
 <li>jdk-8u131-win.....exe中：u代表update，131表示在jdk8.0版本上已经更新到131了</li>
 </ul>
 <figure>
-<img src="/2021/11/23/Coding/Java/01Java%E8%AF%AD%E8%A8%80%E6%A6%82%E8%BF%B0/01%20JDK-JRE-JVM.png" alt="JDK-JRE-JVM关系"><figcaption aria-hidden="true">JDK-JRE-JVM关系</figcaption>
+<img src="/2021/11/22/Coding/Java/01Java%E8%AF%AD%E8%A8%80%E6%A6%82%E8%BF%B0/01%20JDK-JRE-JVM.png" alt="JDK-JRE-JVM关系"><figcaption aria-hidden="true">JDK-JRE-JVM关系</figcaption>
 </figure>
 <p>JDK目录结构：</p>
 <figure>
-<img src="/2021/11/23/Coding/Java/01Java%E8%AF%AD%E8%A8%80%E6%A6%82%E8%BF%B0/02%20JDK%20Directory%20Architecture.png" alt="JDK目录结构"><figcaption aria-hidden="true">JDK目录结构</figcaption>
+<img src="/2021/11/22/Coding/Java/01Java%E8%AF%AD%E8%A8%80%E6%A6%82%E8%BF%B0/02%20JDK%20Directory%20Architecture.png" alt="JDK目录结构"><figcaption aria-hidden="true">JDK目录结构</figcaption>
 </figure>
 <ul>
 <li>bin目录：开发工具，包括编译工具javac.exe、文档生成工具javadoc.exe</li>
@@ -2041,7 +2422,7 @@
 <li><p>编译和运行上述代码的指令</p></li>
 </ol>
 <figure>
-<img src="/2021/11/23/Coding/Java/01Java%E8%AF%AD%E8%A8%80%E6%A6%82%E8%BF%B0/03%20Day1%20-%2002.png" alt="alt"><figcaption aria-hidden="true">alt</figcaption>
+<img src="/2021/11/22/Coding/Java/01Java%E8%AF%AD%E8%A8%80%E6%A6%82%E8%BF%B0/03%20Day1%20-%2002.png" alt="alt"><figcaption aria-hidden="true">alt</figcaption>
 </figure>
 ]]></content>
       <categories>
