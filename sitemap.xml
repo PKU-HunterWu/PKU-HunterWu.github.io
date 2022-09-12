@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://pku-hunterwu.github.io/2022/02/20/Coding/Java/17Java9&Java10&Java11%E6%96%B0%E7%89%B9%E6%80%A7/</loc>
+    
+    <lastmod>2022-02-20</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://pku-hunterwu.github.io/2022/02/15/Coding/Java/16Java8%E7%9A%84%E5%85%B6%E4%BB%96%E6%96%B0%E7%89%B9%E6%80%A7/</loc>
+    
+    <lastmod>2022-02-15</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://pku-hunterwu.github.io/2022/02/11/Coding/Java/15Java%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/</loc>
     
     <lastmod>2022-02-11</lastmod>
@@ -158,7 +172,7 @@
 
   <url>
     <loc>https://pku-hunterwu.github.io/</loc>
-    <lastmod>2022-09-04</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -166,7 +180,7 @@
   
   <url>
     <loc>https://pku-hunterwu.github.io/tags/%E7%AC%94%E8%AE%B0/</loc>
-    <lastmod>2022-09-04</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
@@ -175,14 +189,14 @@
   
   <url>
     <loc>https://pku-hunterwu.github.io/categories/%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/</loc>
-    <lastmod>2022-09-04</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://pku-hunterwu.github.io/categories/%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/Java/</loc>
-    <lastmod>2022-09-04</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
